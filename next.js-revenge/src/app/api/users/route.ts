@@ -6,6 +6,7 @@ export async function GET(){
         const[rows] = await connection.execute('SELECT * FROM users');
         return NextResponse.json({users:rows});
     } catch(error){
+        console.error('database error',error);
         return NextResponse.json({message:'error',error},{status:500});
     }
 }
