@@ -88,14 +88,14 @@ const Register = () => {
 
         <button
           type="submit"
-          className="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600"
+          className="w-full bg-cyan-500 text-white py-2 rounded hover:bg-lime-700"
         >
           登録
         </button>
 
         <button
           type="button"
-          className="w-full bg-blue-500 text-white py-2 rounded mt-4 hover:bg-blue-600"
+          className="w-full bg-cyan-700 text-white py-2 rounded mt-4 hover:bg-lime-500"
           onClick={() => router.push('/')} 
         >
           ログインへ戻る
@@ -108,7 +108,7 @@ const Register = () => {
             <h2 className="text-2xl font-bold mb-4">作成完了</h2>
             <p className="mb-6">ユーザー登録が完了しました！</p>
             <button
-              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+              className="bg-lime-600 text-white py-2 px-4 rounded hover:bg-cyan-600"
               onClick={() => router.push('/')} // ログインページへリダイレクト
             >
               ログインへ戻る

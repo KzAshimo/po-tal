@@ -9,6 +9,22 @@ const LoginPage = () =>{
     const [error,setError] = useState('');
     const router = useRouter();
 
+    const GuestLogin = async() =>{
+      const guestUsername = 'guest';
+      const guestPassword = 'guest';
+
+      const res = await fetch('api/login',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({username:guestUsername,password:guestPassword})
+      });
+      if(res.ok){
+        router.push('/main');
+      }else{
+        console.log('ゲスト認証失敗');
+      }
+    };
+
     const handleSubmit = async(e:React.FormEvent<HTMLFormElement>) =>{
         e.preventDefault();
         try{
@@ -62,7 +78,7 @@ const LoginPage = () =>{
     
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+              className="w-full bg-cyan-400 text-white py-2 rounded hover:bg-lime-800"
             >
               ログイン
             </button>
@@ -70,10 +86,18 @@ const LoginPage = () =>{
              {/* ユーザー登録へのボタン */}
         <button
           type="button"
-          className="w-full bg-green-500 text-white py-2 rounded mt-4 hover:bg-green-600"
+          className="w-full bg-cyan-600 text-white py-2 rounded mt-4 hover:bg-lime-600"
           onClick={() => router.push('/register')} // クリック時に /register へ遷移
         >
           新規登録
+        </button>
+
+        <button
+          type="button"
+          onClick={GuestLogin}
+          className="w-full bg-cyan-800 text-white py-2 rounded mt-4 hover:bg-lime-400"
+        >
+          ゲストログイン
         </button>
 
           </form>
