@@ -1,18 +1,10 @@
 import { NextResponse } from "next/server";
-import mysql from 'mysql2/promise'
+import connection from "@/lib/db";
 
 export async function POST(req:Request){
     const{username,password} = await req.json();
 
-    try{
-        const connection = await mysql.createConnection({
-            host:'127.0.0.1',
-            user:'root',
-            password:'',
-            database:'db_login'
-        });
-
-        const [rows] = await connection.execute(
+    try{ const [rows] = await connection.execute(
             `SELECT * FROM users WHERE username = ? AND password = ?`,
             [username,password]
         );

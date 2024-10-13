@@ -96,7 +96,7 @@ const Register = () => {
         <button
           type="button"
           className="w-full bg-cyan-700 text-white py-2 rounded mt-4 hover:bg-lime-500"
-          onClick={() => router.push('/')} 
+          onClick={() => router.push('/')}
         >
           ログインへ戻る
         </button>
