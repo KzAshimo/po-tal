@@ -14,7 +14,7 @@ const Register = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     const res = await fetch('/api/users', {
       method: 'POST',
       headers: {
