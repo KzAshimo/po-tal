@@ -39,7 +39,7 @@ const Register = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className="flex items-center justify-center h-screen bg-cyan-50">
       <form onSubmit={handleSubmit} className="w-1/3 p-8 bg-white shadow-lg rounded">
         <h2 className="text-2xl font-bold mb-6">ユーザー登録</h2>
 
