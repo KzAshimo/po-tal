@@ -1,18 +1,24 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import '../globals.css';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [group, setGroup] = useState('');
   const [message, setMessage] = useState('');
-  const [showModal,setShowModal] = useState(false);
+  const [showCompleteModal,setShowCompleteModal] = useState(false); //完了モーダル
+  const [showConfirmModal,setShowConfirmModal] = useState(false); //確認モーダル
   const [passView,setPassView] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleConfirm = (e:React.FormEvent) =>{
+    e.preventDefault();
+    setShowConfirmModal(true);
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
     const res = await fetch('/api/users', {
@@ -29,18 +35,20 @@ const Register = () => {
 
     const data = await res.json();
     if (res.ok) {
-      setShowModal(true);
+      setShowConfirmModal(false); //確認モーダル　閉
+      setShowCompleteModal(true); //完了モーダル　開
       setUsername('');
       setPassword('');
       setGroup('');
     } else {
       setMessage(`Error: ${data.message}`);
+      setShowConfirmModal(false); //確認モーダル　閉
     }
   };
 
   return (
     <div className="flex items-center justify-center h-screen bg-cyan-50">
-      <form onSubmit={handleSubmit} className="w-1/3 p-8 bg-white shadow-lg rounded">
+      <form onSubmit={handleConfirm} className="w-1/3 p-8 bg-white shadow-lg rounded">
         <h2 className="text-2xl font-bold mb-6">ユーザー登録</h2>
 
         {message && <p className="text-red-500">{message}</p>}
@@ -102,7 +110,8 @@ const Register = () => {
         </button>
       </form>
 
-      {showModal && (
+      {/* 完了モーダル */}
+      {showCompleteModal && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded shadow-lg text-center">
             <h2 className="text-2xl font-bold mb-4">作成完了</h2>
@@ -112,6 +121,31 @@ const Register = () => {
               onClick={() => router.push('/')} // ログインページへリダイレクト
             >
               ログインへ戻る
+            </button>
+          </div>
+        </div>
+      )}
+
+       {/* 確認モーダル */}
+       {showConfirmModal && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded shadow-lg text-center">
+            <h2 className="text-2xl font-bold mb-4">確認</h2>
+            <p>ユーザー名: {username}</p>
+            <p>パスワード: {password}</p>
+            <p>グループ名: {group}</p>
+            <button
+              className="bg-cyan-900 text-white py-2 px-4 rounded mt-4 hover:bg-lime-500"
+              onClick={handleRegister}
+            >
+              本登録する
+            </button>
+            <br />
+            <button
+              className="bg-cyan-700 text-white py-2 px-4 rounded mt-4 hover:bg-lime-700"
+              onClick={() => setShowConfirmModal(false)}
+            >
+              キャンセル
             </button>
           </div>
         </div>

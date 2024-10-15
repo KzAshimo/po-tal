@@ -18,6 +18,7 @@ const LoginPage = () => {
   const closeModal = () => {
     setShowModal(false);
   };
+  
   //ゲストログイン
   const guestLogin = async () => {
     const guestUsername = "guest";
@@ -161,6 +162,7 @@ const LoginPage = () => {
         管理者ログイン
       </button>
 
+      {/* 管理者ログイン用モーダル */}
       {showModal && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded shadow-lg text-center">
