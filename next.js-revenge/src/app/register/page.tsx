@@ -13,7 +13,7 @@ const Register = () => {
   const [passView,setPassView] = useState(false);
   const router = useRouter();
 
-  const handleConfirm = (e:React.FormEvent) =>{
+  const handleConfirm = (e:React.FormEvent) =>{ //確認モーダル
     e.preventDefault();
     setShowConfirmModal(true);
   };

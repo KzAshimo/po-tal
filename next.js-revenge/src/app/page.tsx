@@ -32,10 +32,15 @@ const LoginPage = () => {
         password: guestPassword,
       }),
     });
+    const data = await res.json();
+
     if (res.ok) {
-      router.push("/main");
-    } else {
-      console.log("ゲスト認証失敗");
+      localStorage.setItem('token',data.token);
+      console.log('ログイン成功',data.token);
+
+      router.push('/main');
+    }else{
+      console.log('ゲスト認証失敗');
     }
   };
   //通常ログイン
@@ -52,6 +57,9 @@ const LoginPage = () => {
       const data = await res.json();
 
       if (res.ok) {
+        localStorage.setItem('token',data.token);
+        console.log('ログイン成功',data.token);
+
         router.push("/main");
       } else {
         setError(data.message || "ログイン失敗");
