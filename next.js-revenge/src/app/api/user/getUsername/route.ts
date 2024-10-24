@@ -21,16 +21,4 @@ try{
 }catch(error){
     return NextResponse.json({message:'無効なトークン'},{status:403});
 
-}}
-
-export async function POST(req:Request){
-    const {username,password} = await req.json();
-
-    if(username === 'amuro' && password === 'ray'){
-        const token = jwt.sign({username},SECRET_KEY,{expiresIn:'1h'});
-        
-        return NextResponse.json({message:'ログイン成功',token})
-    }else{
-        return NextResponse.json({message:'認証失敗',status:401});
-    }
-}
+}};

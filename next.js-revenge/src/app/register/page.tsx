@@ -21,7 +21,7 @@ const Register = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const res = await fetch('/api/users', {
+    const res = await fetch('/api/user/registUser', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

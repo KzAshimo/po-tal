@@ -24,7 +24,7 @@ const LoginPage = () => {
     const guestUsername = "guest";
     const guestPassword = "guest";
 
-    const res = await fetch("api/login", {
+    const res = await fetch("api/user/loginUser", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -47,7 +47,7 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const res = await fetch("api/login", {
+      const res = await fetch("api/user/loginUser", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -73,7 +73,7 @@ const LoginPage = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch("/api/admin/", {
+      const res = await fetch("/api/user/adminUser", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password: adminPass }),
