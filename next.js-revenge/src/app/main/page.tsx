@@ -52,11 +52,13 @@ const Main = () => {
     if(navigator.geolocation){
       navigator.geolocation.getCurrentPosition(async(position)=>{
         const {latitude,longitude} = position.coords;
+        const token = localStorage.getItem('token');
 
         const res = await fetch('/api/dispatch/start',{
           method:'POST',
           headers:{
-            'Content-Type':'application/json'
+            'Content-Type':'application/json',
+            'Authorization': `Bearer ${token}`, 
           },
           body:JSON.stringify({
             latitude,

@@ -1,27 +1,15 @@
 CREATE TABLE location_logs (
   id INT PRIMARY KEY AUTO_INCREMENT,
   user_id INT,
-  latitude DECIMAL(10, 8),
-  longitude DECIMAL(11, 8),
-  timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
--- 変更
-  -- カラム名変更
-ALTER TABLE location_logs CHANGE timestamp start_time DATETIME DEFAULT CURRENT_TIMESTAMP; 
-  -- カラム追加
-ALTER TABLE location_logs ADD end_time DATETIME;
-  -- カラム追加
-ALTER TABLE location_logs ADD duration INT;
--- 変更後
-CREATE TABLE location_logs (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  user_id INT,
-  latitude DECIMAL(10, 8),
-  longitude DECIMAL(11, 8),
-  start_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-  end_time DATETIME,
-  duration INT,  -- 経過時間（秒単位で保存）
+  start_latitude DECIMAL(10, 8),   -- 開始位置の緯度
+  start_longitude DECIMAL(11, 8),  -- 開始位置の経度
+  end_latitude DECIMAL(10, 8),     -- 終了位置の緯度
+  end_longitude DECIMAL(11, 8),    -- 終了位置の経度
+  start_time DATETIME DEFAULT CURRENT_TIMESTAMP, -- 開始時刻
+  end_time DATETIME,               -- 終了時刻
+  duration INT AS (TIMESTAMPDIFF(SECOND, start_time, end_time)),  -- 自動計算で経過時間を算出
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- レコード作成日時
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,  -- レコード更新日時
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
