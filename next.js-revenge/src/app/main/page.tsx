@@ -95,7 +95,7 @@ const Main = () => {
         <form className="w-1/3 p-8 bg-slate-100 shadow-lg rounded mb-4 mx-3">
           <h1 className="text-2xl font-bold">出場報告</h1>
           <p className="py-2">
-            災害出動前、出動後の報告を行います。
+            報告を行います。
             下記ボタンクリックで時刻、位置を本部へ送信します。
           </p>
           <button

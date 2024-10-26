@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 
 const Dispatch = () => {
     const [seconds, setSeconds] = useState<number>(0);
-    const [dispatchId, setDispatchId] = useState<number | null>(null);
+    const [username, setUsername] = useState('');
+
     const router = useRouter();
 
     // タイマー用の useEffect
@@ -16,54 +17,53 @@ const Dispatch = () => {
         return () => clearInterval(interval);
     }, []);
 
-    // ローカルストレージから dispatchId を取得
+    // ユーザーデータの取得
     useEffect(() => {
-        const savedId = localStorage.getItem('dispatchId');
-        if (savedId) {
-            setDispatchId(parseInt(savedId, 10));
-        }
-    }, []);
+        const fetchData = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('トークンが見つかりません。再度ログインしてください。');
+                router.push('/');
+                return;
+            }
 
-    // 出場終了ボタンの処理
+            const res = await fetch('/api/user/getUsername', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setUsername(data.username);
+            } else {
+                alert('エラー: ' + data.message);
+                router.push('/');
+            }
+        };
+        fetchData();
+    }, [router]);
+
     const endDispatch = async () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(async (position) => {
                 const { latitude, longitude } = position.coords;
+                const token = localStorage.getItem('token');
 
-                // dispatchId が取得できているか確認
-                if (!dispatchId) {
-                    alert("dispatchId が存在しません。");
-                    return;
-                }
-
-                const token = localStorage.getItem('token'); // ローカルストレージからトークンを取得
-                if (!token) {
-                    alert("トークンが存在しません。再度ログインしてください。");
-                    return;
-                }
-
-                // リクエスト送信
-                const res = await fetch(`/api/dispatch/end`, {
+                const res = await fetch('/api/dispatch/end', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}` // トークンをヘッダーに含める
+                        'Authorization': `Bearer ${token}`,
                     },
                     body: JSON.stringify({
-                        id: dispatchId,
                         latitude,
                         longitude,
-                        duration: seconds,
-                    })
+                    }),
                 });
 
-                // レスポンス確認
                 if (res.ok) {
-                    alert('終了しました');
-                    router.push('/main');
+                    router.push(`/main`);
                 } else {
                     const errorData = await res.json();
-                    alert(`エラーが発生しました: ${errorData.message}`);
+                    alert('エラー: ' + errorData.message);
                 }
             });
         } else {
@@ -71,16 +71,30 @@ const Dispatch = () => {
         }
     };
 
+    // 秒を時間、分、秒に変換する関数
+    const formatTime = (totalSeconds: number) => {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const secs = totalSeconds % 60;
+
+        return `${hours}時間 ${minutes}分 ${secs}秒`;
+    };
+
     return (
-        <div className="container">
-            <h1>タイマー: {seconds} 秒</h1>
-            <button
-                onClick={endDispatch}
-                className="bg-red-500 text-white py-2 px-4 rounded"
-            >
-                出場終了
-            </button>
+      <div className="flex items-center justify-center h-screen bg-cyan-50">
+        <div className="w-1/2 p-8 bg-white shadow-lg rounded">
+          <h1 className="text-2xl font-bold mb-4">
+            <span className="text-xl px-2 font-bold underline underline-offset-4">{username}</span>さん  活動中
+          </h1>
+          <h1 className="text-xl mb-4">タイマー: {formatTime(seconds)}</h1>
+          <button
+            onClick={endDispatch}
+            className="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600"
+          >
+            出場終了
+          </button>
         </div>
+      </div>
     );
 };
 
