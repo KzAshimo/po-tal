@@ -29,7 +29,7 @@ export async function POST(req: Request) {
                  end_latitude = ?, 
                  end_longitude = ? 
              WHERE user_id = ?`,
-            [latitude, longitude, userId] // dispatchIdを追加
+            [latitude, longitude, userId] 
         );
 
         if (updateResult.affectedRows === 0) {
