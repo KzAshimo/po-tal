@@ -65,6 +65,24 @@ const Main: React.FC = () => {
     router.push("/");
   };
 
+  const onSubmitReq = async(group:number,content:string) =>{
+    const token = localStorage.getItem("token");
+    const res = await fetch("api/requests",{
+      method:"POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ group, content}),
+    })
+
+    if(res.ok){
+      alert("送信完了");
+    }else{
+      alert("送信失敗");
+    }
+  }
+
   return (
     <>
       <div className="flex bg-white p-3">
@@ -82,6 +100,8 @@ const Main: React.FC = () => {
           ログアウト
         </button>
       </div>
+
+      
       <div className="flex flex-wrap items-center justify-center h-screen bg-cyan-100">
         <form className="w-1/3 h-auto p-8 bg-slate-100 shadow-lg rounded m-5">
           <h1 className="text-2xl font-bold">出場報告</h1>
@@ -124,7 +144,7 @@ const Main: React.FC = () => {
       )}
 
       {requestModal && (
-        <RequestModal onClose={() => setRequestModal(false)} />
+        <RequestModal onClose={() => setRequestModal(false)} onSubmit={onSubmitReq}/>
       )}
     </>
   );

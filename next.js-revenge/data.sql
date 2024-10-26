@@ -16,7 +16,7 @@ CREATE TABLE location_logs (
 CREATE TABLE requests (
   id INT PRIMARY KEY AUTO_INCREMENT,
   user_id INT,
-  title VARCHAR(255),
+  group INT,
   content TEXT,
   status ENUM('未読', '既読', '対応済み') DEFAULT '未読',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
