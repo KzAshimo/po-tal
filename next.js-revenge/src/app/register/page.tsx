@@ -67,14 +67,6 @@ const Register = () => {
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">パスワード</label>
 
-          <button
-            type="button"
-            onClick={() => setPassView(!passView)} // ボタンをクリックすると表示状態を切り替え
-            className="bg-slate-100 text-black rounded text-sm p-1"
-          >
-            {passView ? "表示" : "非表示"} {/* 表示状態によってアイコンを切り替え */}
-          </button>
-
           <input
             type={passView ? 'text':'password'}
             className="w-full p-2 border border-gray-300 rounded"
@@ -82,6 +74,14 @@ const Register = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+                    <button
+            type="button"
+            onClick={() => setPassView(!passView)} // ボタンをクリックすると表示状態を切り替え
+            className="bg-slate-100 text-black rounded text-sm p-1"
+          >
+            {passView ? "表示" : "非表示"} {/* 表示状態によってアイコンを切り替え */}
+          </button>
+
         </div>
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">グループ名</label>

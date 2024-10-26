@@ -18,7 +18,7 @@ const LoginPage = () => {
   const closeModal = () => {
     setShowModal(false);
   };
-  
+
   //ゲストログイン
   const guestLogin = async () => {
     const guestUsername = "guest";
@@ -35,12 +35,12 @@ const LoginPage = () => {
     const data = await res.json();
 
     if (res.ok) {
-      localStorage.setItem('token',data.token);
-      console.log('ログイン成功',data.token);
+      localStorage.setItem("token", data.token);
+      console.log("ログイン成功", data.token);
 
-      router.push('/main');
-    }else{
-      console.log('ゲスト認証失敗');
+      router.push("/main");
+    } else {
+      console.log("ゲスト認証失敗");
     }
   };
   //通常ログイン
@@ -57,8 +57,8 @@ const LoginPage = () => {
       const data = await res.json();
 
       if (res.ok) {
-        localStorage.setItem('token',data.token);
-        console.log('ログイン成功',data.token);
+        localStorage.setItem("token", data.token);
+        console.log("ログイン成功", data.token);
 
         router.push("/main");
       } else {
@@ -119,6 +119,13 @@ const LoginPage = () => {
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">パスワード</label>
 
+          <input
+            type={passView ? "text" : "password"}
+            className="w-full p-2 border border-gray-300 rounded"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
           <button
             type="button"
             onClick={() => setPassView(!passView)} // ボタンをクリックすると表示状態を切り替え
@@ -127,14 +134,6 @@ const LoginPage = () => {
             {passView ? "表示" : "非表示"}{" "}
             {/* 表示状態によってアイコンを切り替え */}
           </button>
-
-          <input
-            type={passView ? "text" : "password"}
-            className="w-full p-2 border border-gray-300 rounded"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
         </div>
 
         <button
