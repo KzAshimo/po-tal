@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     );
 
     return NextResponse.json(
-      { message: '要望が保存されました', requestId: result.insertId }, // 必要に応じてrequestIdも返す
+      { message: '要望が保存されました', requestId: result.insertId }, 
       { status: 201 }
     );
   } catch (error) {
