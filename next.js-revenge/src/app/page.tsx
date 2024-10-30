@@ -73,7 +73,7 @@ const LoginPage = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch("/api/user/adminUser", {
+      const res = await fetch("/api/user/adminUserLogin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password: adminPass }),

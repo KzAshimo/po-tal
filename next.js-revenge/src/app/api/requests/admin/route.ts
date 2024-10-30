@@ -8,9 +8,6 @@ export async function GET(){
       SELECT * FROM requests
       JOIN users ON requests.user_id = users.id`
     );
-    const [users] = await connection.query(`
-      SELECT * FROM users`
-    );
 
     return NextResponse.json({requests:requestUsers});
   }catch(error){
