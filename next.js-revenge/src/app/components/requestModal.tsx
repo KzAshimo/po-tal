@@ -38,7 +38,7 @@ const RequestModal: React.FC<RequestModalProps> = ({ onClose,onSubmit }) => {
           onChange={(e)=>setGroup(e.target.value)}
         />
         <textarea
-          className="w-3/4 p-2 border border-gray-300 rounded h-32 resize-none"
+          className="w-full p-2 border border-gray-300 rounded h-32 resize-none"
           required
           placeholder="要望を入力"
           onChange={(e)=>setContent(e.target.value)}

@@ -18,11 +18,12 @@ CREATE TABLE requests (
   user_id INT,
   group INT,
   content TEXT,
-  status ENUM('未読', '既読', '対応済み') DEFAULT '未読',
+  status ENUM('未対応', '対応済み') DEFAULT '未対応',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
 
 CREATE TABLE bulletin_board_posts (
   id INT PRIMARY KEY AUTO_INCREMENT,
