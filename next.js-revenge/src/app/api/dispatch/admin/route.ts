@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const [location] = await connection.query(`
-      SELECT location_logs.*, users.username
+      SELECT location_logs.*, users.username,users.group
       FROM location_logs
       JOIN users ON location_logs.user_id = users.id
     `);

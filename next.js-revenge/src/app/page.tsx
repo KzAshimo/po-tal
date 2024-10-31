@@ -179,15 +179,6 @@ const LoginPage = () => {
                 パスワード
               </label>
 
-              <button
-                type="button"
-                onClick={() => setPassView(!passView)} // ボタンをクリックすると表示状態を切り替え
-                className="bg-slate-100 text-black rounded text-sm p-1"
-              >
-                {passView ? "表示" : "非表示"}{" "}
-                {/* 表示状態によってアイコンを切り替え */}
-              </button>
-
               <input
                 type={passView ? "text" : "password"}
                 className="w-full p-2 border border-gray-300 rounded"
@@ -195,6 +186,15 @@ const LoginPage = () => {
                 onChange={(e) => setAdminPass(e.target.value)}
                 required
               />
+                            <button
+                type="button"
+                onClick={() => setPassView(!passView)} // ボタンをクリックすると表示状態を切り替え
+                className="bg-slate-100 text-black rounded text-sm p-1"
+              >
+                {passView ? "表示" : "非表示"}{" "}
+                {/* 表示状態によってアイコンを切り替え */}
+              </button>
+              <br />
               <button
                 className="bg-slate-500 text-white mt-4 py-2 px-4 rounded hover:bg-slate-100 hover:text-black"
                 type="submit"
