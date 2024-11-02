@@ -68,7 +68,7 @@ const Main: React.FC = () => {
 
   const onSubmitReq = async(group:number,content:string) =>{
     const token = localStorage.getItem("token");
-    const res = await fetch("api/requests/main",{
+    const res = await fetch("/api/requests/main",{
       method:"POST",
       headers: {
         "Content-Type": "application/json",

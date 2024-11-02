@@ -34,6 +34,14 @@ export async function POST(request: NextRequest) {
 
     const userId = decodedToken.id;
 
+    //ユーザーが幹部か確認
+    const [result] = await connection.query("SELECT executive FROM users WHERE id = ?",[userId]);
+    const isExecutive = result[0]?.executive === 1;
+
+    if(!isExecutive){
+      return NextResponse.json({message:"幹部のみの機能です"},{status:403});
+    }
+
     // 必須フィールドのチェック
     if (!group || !content) {
       return NextResponse.json({ message: "グループと内容は必須です" }, { status: 400 });
