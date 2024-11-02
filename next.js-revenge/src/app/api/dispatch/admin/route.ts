@@ -16,3 +16,5 @@ export async function GET() {
     return NextResponse.json({ message: "データベースエラー" }, { status: 500 });
   }
 }
+
+

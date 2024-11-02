@@ -4,24 +4,17 @@ import "../globals.css";
 import { useRouter } from "next/navigation";
 
 const Admin = () => {
-  const [data, setData] = useState({ requests: [], users: [] });
+  const [data, setData] = useState({ requests: [], users: [], location: [] });
   const [error, setError] = useState(null);
-  const [selectedContent, setSelectedContent] = useState(""); // 表示するコンテンツを制御
-
+  const [selectedContent, setSelectedContent] = useState("");
+  const [searchQuery, setSearchQuery] = useState(""); // 検索クエリ状態追加
   const router = useRouter();
 
-  // ログアウト
   const handleLogout = async () => {
     try {
-      const response = await fetch("api/admin/logout", {
-        method: "POST",
-      });
-
-      if (response.ok) {
-        router.replace("/");
-      } else {
-        console.error("ログアウトエラー");
-      }
+      const response = await fetch("api/admin/logout", { method: "POST" });
+      if (response.ok) router.replace("/");
+      else console.error("ログアウトエラー");
     } catch (error) {
       console.error("ログアウトエラー");
     }
@@ -32,10 +25,7 @@ const Admin = () => {
     const fetchRequestsData = async () => {
       try {
         const response = await fetch("api/requests/admin");
-
-        if (!response.ok) {
-          throw new Error("データ取得エラー");
-        }
+        if (!response.ok) throw new Error("データ取得エラー");
         const result = await response.json();
         setData((prevData) => ({ ...prevData, requests: result.requests }));
       } catch (error) {
@@ -51,10 +41,7 @@ const Admin = () => {
     const fetchUsersData = async () => {
       try {
         const response = await fetch("/api/user/userInfo");
-
-        if (!response.ok) {
-          throw new Error("ユーザー情報取得エラー");
-        }
+        if (!response.ok) throw new Error("ユーザー情報取得エラー");
         const result = await response.json();
         setData((prevData) => ({ ...prevData, users: result.users }));
       } catch (error) {
@@ -70,10 +57,7 @@ const Admin = () => {
     const fetchLocationData = async () => {
       try {
         const response = await fetch("/api/dispatch/admin");
-
-        if (!response.ok) {
-          throw new Error("出場情報取得エラー");
-        }
+        if (!response.ok) throw new Error("出場情報取得エラー");
         const result = await response.json();
         setData((prevData) => ({ ...prevData, location: result.location }));
       } catch (error) {
@@ -84,59 +68,57 @@ const Admin = () => {
     fetchLocationData();
   }, []);
 
+  const handleSearch = (e) => setSearchQuery(e.target.value.toLowerCase());
+
+  // 検索結果をフィルタリング
+  const filteredUsers = data.users.filter((user) =>
+    user.username.toLowerCase().includes(searchQuery)
+  );
+
+  const filteredLocations = data.location.filter((log) =>
+    log.username.toLowerCase().includes(searchQuery)
+  );
+
   return (
     <div className="flex h-screen">
-      {/* サイドバー */}
       <aside className="w-1/5 bg-zinc-950 text-white p-6 text-center">
         <h2 className="text-xl font-bold mb-6">管理者メニュー</h2>
         <ul>
           <li className="mb-4">
             <button
               className="w-full text-left py-2 px-4 rounded bg-amber-600 hover:bg-amber-400"
-              type="button"
-              onClick={() => setSelectedContent("users")} // 団員情報ボタン
+              onClick={() => setSelectedContent("users")}
             >
               団員情報
             </button>
           </li>
-
           <li className="mb-4">
             <button
               className="w-full text-left py-2 px-4 rounded bg-amber-600 hover:bg-amber-400"
-              type="button"
-              onClick={() => setSelectedContent("location")} // 出場情報ボタン
+              onClick={() => setSelectedContent("location")}
             >
               出場情報
             </button>
           </li>
-
           <li className="mb-4">
             <button
               className="w-full text-left py-2 px-4 rounded bg-amber-600 hover:bg-amber-400"
-              type="button"
-              onClick={() => setSelectedContent("requests")} // 要望確認ボタン
+              onClick={() => setSelectedContent("requests")}
             >
               要望確認
             </button>
           </li>
-
           <li>
-            <button
-              className="w-full text-left py-2 px-4 rounded bg-amber-600 hover:bg-amber-400"
-              type="button"
-            >
+            <button className="w-full text-left py-2 px-4 rounded bg-amber-600 hover:bg-amber-400">
               掲示板
             </button>
           </li>
         </ul>
       </aside>
 
-      {/* メインコンテンツエリア */}
       <main className="flex-1 bg-slate-200 p-8">
         <div className="flex justify-between items-center bg-white p-4 shadow-lg mb-4">
-          <h1 className="text-xl">
-            ようこそ <span className="font-bold underline">管理者</span> 様
-          </h1>
+          <h1 className="text-xl">ようこそ <span className="font-bold underline">管理者</span> 様</h1>
           <button
             className="rounded bg-red-500 px-4 py-2 text-white hover:bg-pink-800"
             onClick={handleLogout}
@@ -147,11 +129,20 @@ const Admin = () => {
 
         <div className="bg-slate-100 p-6 shadow-lg rounded">
           <h2 className="text-2xl font-bold mb-4">コンテンツ表示</h2>
-
-          {/* エラーがある場合の表示 */}
           {error && <p className="text-red-500">エラー: {error}</p>}
 
-          {/* 団員情報*/}
+          {selectedContent && (
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="名前で検索"
+                className="w-full py-2 px-4 border rounded"
+                value={searchQuery}
+                onChange={handleSearch}
+              />
+            </div>
+          )}
+
           {selectedContent === "users" && (
             <div>
               <h3 className="text-lg font-semibold">団員情報</h3>
@@ -161,21 +152,16 @@ const Admin = () => {
               >
                 閉じる
               </button>
-
               <ul>
-                {data.users.map((user) => (
+                {filteredUsers.map((user) => (
                   <li key={user.id} className="p-2 bg-gray-200 mb-2 rounded">
                     {user.group} 分団: {user.username}
-                    {""} {user.executive === 1 ? "【幹部】" : ""}
-
-                    
-                    
+                    {user.executive === 1 ? "【幹部】" : ""}
                   </li>
                 ))}
               </ul>
             </div>
           )}
-
           {/* 出場情報*/}
           {selectedContent === "location" && (
             <div>
@@ -228,8 +214,7 @@ const Admin = () => {
               </ul>
             </div>
           )}
-
-          {/* 要望確認*/}
+          
           {selectedContent === "requests" && (
             <div>
               <h3 className="text-lg font-semibold">要望確認</h3>
@@ -242,28 +227,16 @@ const Admin = () => {
               <ul>
                 {data.requests.map((request) => (
                   <li key={request.id} className="p-2 bg-gray-200 mb-2 rounded">
-                    {new Date(request.created_at).toLocaleString("ja-JP", {
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      second: "2-digit",
-                    })}{" "}
+                    {new Date(request.created_at).toLocaleString("ja-JP", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" })}
                     <br />
-                    要望者:{request.username}
-                    <br />
-                    {request.group} 分団
-                    <br />
-                    要望: {request.content}
+                    要望者:{request.username}<br />{request.group} 分団<br />要望: {request.content}
                   </li>
                 ))}
               </ul>
             </div>
           )}
-          {!selectedContent && (
-            <p>ここに選択されたメニューの内容が表示されます。</p>
-          )}
+
+          {!selectedContent && <p>ここに選択されたメニューの内容が表示されます。</p>}
         </div>
       </main>
     </div>
