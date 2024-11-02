@@ -3,6 +3,10 @@ import { useEffect, useState } from "react";
 import "../globals.css";
 import { useRouter } from "next/navigation";
 
+// 新しいコンポーネントをインポート
+import AdminPostForm from "../components/adminPostForm";
+import BulletinBoard from "../components/bulletinBoard";
+
 const Admin = () => {
   const [data, setData] = useState({ requests: [], users: [], location: [] });
   const [error, setError] = useState(null);
@@ -108,9 +112,20 @@ const Admin = () => {
               要望確認
             </button>
           </li>
+          <li className="mb-4">
+            <button
+              className="w-full text-left py-2 px-4 rounded bg-amber-600 hover:bg-amber-400"
+              onClick={() => setSelectedContent("post")}
+            >
+              掲示板投稿
+            </button>
+          </li>
           <li>
-            <button className="w-full text-left py-2 px-4 rounded bg-amber-600 hover:bg-amber-400">
-              掲示板
+            <button
+              className="w-full text-left py-2 px-4 rounded bg-amber-600 hover:bg-amber-400"
+              onClick={() => setSelectedContent("bulletin")}
+            >
+              掲示板確認
             </button>
           </li>
         </ul>
@@ -118,7 +133,9 @@ const Admin = () => {
 
       <main className="flex-1 bg-slate-200 p-8">
         <div className="flex justify-between items-center bg-white p-4 shadow-lg mb-4">
-          <h1 className="text-xl">ようこそ <span className="font-bold underline">管理者</span> 様</h1>
+          <h1 className="text-xl">
+            ようこそ <span className="font-bold underline">管理者</span> 様
+          </h1>
           <button
             className="rounded bg-red-500 px-4 py-2 text-white hover:bg-pink-800"
             onClick={handleLogout}
@@ -214,7 +231,7 @@ const Admin = () => {
               </ul>
             </div>
           )}
-          
+
           {selectedContent === "requests" && (
             <div>
               <h3 className="text-lg font-semibold">要望確認</h3>
@@ -227,16 +244,32 @@ const Admin = () => {
               <ul>
                 {data.requests.map((request) => (
                   <li key={request.id} className="p-2 bg-gray-200 mb-2 rounded">
-                    {new Date(request.created_at).toLocaleString("ja-JP", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                    {new Date(request.created_at).toLocaleString("ja-JP", {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                    })}
                     <br />
-                    要望者:{request.username}<br />{request.group} 分団<br />要望: {request.content}
+                    要望者:{request.username}
+                    <br />
+                    {request.group} 分団
+                    <br />
+                    要望: {request.content}
                   </li>
                 ))}
               </ul>
             </div>
           )}
 
-          {!selectedContent && <p>ここに選択されたメニューの内容が表示されます。</p>}
+          {selectedContent === "post" && <AdminPostForm />}
+          {selectedContent === "bulletin" && <BulletinBoard />}
+
+          {!selectedContent && (
+            <p>ここに選択されたメニューの内容が表示されます。</p>
+          )}
         </div>
       </main>
     </div>

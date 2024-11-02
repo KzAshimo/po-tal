@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import "../globals.css";
 import DispatchModal from "../components/dispatchModal";
 import RequestModal from "../components/requestModal";
+import BulletinBoard from "../components/bulletinBoard";
 
 const Main: React.FC = () => {
   const [dispatchModal, setDispatchModal] = useState(false);
@@ -134,8 +135,7 @@ const Main: React.FC = () => {
         </form>
 
         <form className="w-full p-8 bg-slate-100 shadow-lg rounded mx-5">
-          <h1 className="text-2xl font-bold">掲示板</h1>
-          <p>掲示板予定</p>
+          <BulletinBoard></BulletinBoard>
         </form>
       </div>
 
