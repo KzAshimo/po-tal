@@ -3,8 +3,10 @@ import { NextResponse } from "next/server";
 
 export async function GET(){
   try{
-    const [users] = await connection.query(`
-      SELECT * FROM users`
+    const [users] = await connection.execute(`
+      SELECT * FROM users
+      ORDER BY \`group\` ASC
+      `
     );
 
     return NextResponse.json({users:users});
@@ -26,7 +28,7 @@ export async function POST(request:Request){
 
     await connection.query(
       `UPDATE users SET executive = ? WHERE id = ?`,
-      [id]
+      [newExecutiveStatus,id]
     );
 
     const [updatedUser] = await connection.query(

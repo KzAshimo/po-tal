@@ -6,7 +6,8 @@ export async function GET(){
   try{
     const [requestUsers] = await connection.query(`
       SELECT * FROM requests
-      JOIN users ON requests.user_id = users.id`
+      JOIN users ON requests.user_id = users.id
+      ORDER BY created_at DESC`
     );
 
     return NextResponse.json({requests:requestUsers});

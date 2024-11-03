@@ -8,6 +8,7 @@ export async function GET() {
       SELECT location_logs.*, users.username,users.group
       FROM location_logs
       JOIN users ON location_logs.user_id = users.id
+      ORDER BY start_time DESC
     `);
 
     return NextResponse.json({ location });

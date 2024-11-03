@@ -134,7 +134,7 @@ const Main: React.FC = () => {
           </button>
         </form>
 
-        <form className="w-full p-8 bg-slate-100 shadow-lg rounded mx-5">
+        <form className="w-full p-8 bg-cyan-100 shadow-lg rounded mx-5">
           <BulletinBoard></BulletinBoard>
         </form>
       </div>

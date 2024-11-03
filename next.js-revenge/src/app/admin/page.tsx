@@ -7,9 +7,19 @@ import { useRouter } from "next/navigation";
 import AdminPostForm from "../components/adminPostForm";
 import BulletinBoard from "../components/bulletinBoard";
 
+type UserType = {
+  id: number;
+  username: string;
+  group: string;
+  executive: number;
+};
+
 const Admin = () => {
-  const [data, setData] = useState({ requests: [], users: [], location: [] });
-  const [error, setError] = useState(null);
+  const [data, setData] = useState<{
+    requests: Array<{ id: number; created_at: string; username: string; group: string; content: string }>;
+    users: UserType[];
+    location: Array<{ id: number; username: string; group: string; start_time: string; end_time: string; start_latitude: number; start_longitude: number; end_latitude: number; end_longitude: number; duration: number }>;
+  }>({ requests: [], users: [], location: [] });  const [error, setError] = useState(null);
   const [selectedContent, setSelectedContent] = useState("");
   const [searchQuery, setSearchQuery] = useState(""); // 検索クエリ状態追加
   const router = useRouter();
@@ -72,18 +82,78 @@ const Admin = () => {
     fetchLocationData();
   }, []);
 
+// 幹部切り替え
+const toggleExecutive = async (userId: number, currentExecutive: number) => {
+  const newExecutive = currentExecutive === 1 ? 0 : 1;
+
+  try {
+    const res = await fetch("/api/admin/userData/executiveUpdate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: userId, executive: newExecutive }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      // 成功した場合、該当ユーザーのexecutiveステータスを更新
+      setData((prevData) => ({
+        ...prevData,
+        users: prevData.users.map((user) =>
+          user.id === userId ? { ...user, executive: newExecutive } : user
+        ),
+      }));
+      alert("幹部情報を更新しました");
+    } else {
+      alert(`エラー: ${data.message}`);
+    }
+  } catch (error) {
+    console.error("エラーが発生しました:", error);
+  }
+};
+
+const deleteUser = async (id: number) => {
+  try {
+    const res = await fetch("/api/admin/userData/delete", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      alert(`削除エラー: ${errorData.message}`);
+      return;
+    }
+
+    const data = await res.json();
+    alert(data.message); // 削除完了メッセージ
+
+    // データ更新処理（削除したユーザーを除外）
+    setData((prevData) => ({
+      ...prevData,
+      users: prevData.users.filter((user) => user.id !== id),
+    }));
+  } catch (error) {
+    console.error("削除エラー:", error);
+    alert("削除中にエラーが発生しました");
+  }
+};
+
   const handleSearch = (e) => setSearchQuery(e.target.value.toLowerCase());
 
-  // 検索結果をフィルタリング
-  const filteredUsers = data.users.filter((user) =>
-    user.username.toLowerCase().includes(searchQuery)
-  );
+// 検索結果をフィルタリング
+const filteredUsers = data.users.filter((user) =>
+  user.username.toLowerCase().includes(searchQuery) || 
+  (user.group && user.group.toString().toLowerCase().includes(searchQuery))
+);
 
-  const filteredLocations = data.location.filter((log) =>
-    log.username.toLowerCase().includes(searchQuery)
-  );
+const filteredLocations = data.location.filter((log) =>
+  log.username.toLowerCase().includes(searchQuery) || 
+  (log.group && log.group.toString().toLowerCase().includes(searchQuery))
+);
 
-  return (
+
+return (
     <div className="flex h-screen">
       <aside className="w-1/5 bg-zinc-950 text-white p-6 text-center">
         <h2 className="text-xl font-bold mb-6">管理者メニュー</h2>
@@ -152,7 +222,7 @@ const Admin = () => {
             <div className="mb-4">
               <input
                 type="text"
-                placeholder="名前で検索"
+                placeholder="検索"
                 className="w-full py-2 px-4 border rounded"
                 value={searchQuery}
                 onChange={handleSearch}
@@ -173,7 +243,22 @@ const Admin = () => {
                 {filteredUsers.map((user) => (
                   <li key={user.id} className="p-2 bg-gray-200 mb-2 rounded">
                     {user.group} 分団: {user.username}
-                    {user.executive === 1 ? "【幹部】" : ""}
+                    <button
+                      className={`ml-4 px-2 py-1 rounded text-white ${
+                        user.executive === 1
+                          ? "bg-red-500 hover:bg-red-700"
+                          : "bg-blue-500 hover:bg-blue-700"
+                      }`}
+                      onClick={() => toggleExecutive(user.id, user.executive)}
+                    >
+                      {user.executive === 1 ? "幹部" : "団員"}
+                    </button>
+                    <button
+            onClick={() => deleteUser(user.id)}
+            className={"bg-black ml-4 px-2 py-1 rounded text-white"}
+          >
+            削除
+          </button>
                   </li>
                 ))}
               </ul>
