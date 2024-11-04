@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 // 新しいコンポーネントをインポート
 import AdminPostForm from "../components/adminPostForm";
 import BulletinBoard from "../components/bulletinBoard";
+import { request } from "http";
 
 type UserType = {
   id: number;
@@ -16,10 +17,29 @@ type UserType = {
 
 const Admin = () => {
   const [data, setData] = useState<{
-    requests: Array<{ id: number; created_at: string; username: string; group: string; content: string }>;
+    requests: Array<{
+      id: number;
+      created_at: string;
+      username: string;
+      group: string;
+      content: string;
+      status:number;
+    }>;
     users: UserType[];
-    location: Array<{ id: number; username: string; group: string; start_time: string; end_time: string; start_latitude: number; start_longitude: number; end_latitude: number; end_longitude: number; duration: number }>;
-  }>({ requests: [], users: [], location: [] });  const [error, setError] = useState(null);
+    location: Array<{
+      id: number;
+      username: string;
+      group: string;
+      start_time: string;
+      end_time: string;
+      start_latitude: number;
+      start_longitude: number;
+      end_latitude: number;
+      end_longitude: number;
+      duration: number;
+    }>;
+  }>({ requests: [], users: [], location: [] });
+  const [error, setError] = useState(null);
   const [selectedContent, setSelectedContent] = useState("");
   const [searchQuery, setSearchQuery] = useState(""); // 検索クエリ状態追加
   const router = useRouter();
@@ -33,23 +53,7 @@ const Admin = () => {
       console.error("ログアウトエラー");
     }
   };
-
-  // 要望確認データの取得
-  useEffect(() => {
-    const fetchRequestsData = async () => {
-      try {
-        const response = await fetch("api/requests/admin");
-        if (!response.ok) throw new Error("データ取得エラー");
-        const result = await response.json();
-        setData((prevData) => ({ ...prevData, requests: result.requests }));
-      } catch (error) {
-        console.error(error);
-        setError(error.message);
-      }
-    };
-    fetchRequestsData();
-  }, []);
-
+  //--以下団情報--------------------------------------------------
   // 団員情報データの取得
   useEffect(() => {
     const fetchUsersData = async () => {
@@ -66,6 +70,66 @@ const Admin = () => {
     fetchUsersData();
   }, []);
 
+  // 幹部切り替え
+  const toggleExecutive = async (userId: number, currentExecutive: number) => {
+    const newExecutive = currentExecutive === 1 ? 0 : 1;
+
+    try {
+      const res = await fetch("/api/admin/userData/executiveUpdate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: userId, executive: newExecutive }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        // 成功した場合、該当ユーザーのexecutiveステータスを更新
+        setData((prevData) => ({
+          ...prevData,
+          users: prevData.users.map((user) =>
+            user.id === userId ? { ...user, executive: newExecutive } : user
+          ),
+        }));
+        alert("幹部情報を更新しました");
+      } else {
+        alert(`エラー: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("エラーが発生しました:", error);
+    }
+  };
+
+  //ユーザーデータ削除
+  const deleteUser = async (id: number) => {
+    try {
+      const res = await fetch("/api/admin/userData/delete", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        alert(`削除エラー: ${errorData.message}`);
+        return;
+      }
+
+      const data = await res.json();
+      alert(data.message); // 削除完了メッセージ
+
+      // データ更新処理（削除したユーザーを除外）
+      setData((prevData) => ({
+        ...prevData,
+        users: prevData.users.filter((user) => user.id !== id),
+      }));
+    } catch (error) {
+      console.error("削除エラー:", error);
+      alert("削除中にエラーが発生しました");
+    }
+  };
+  //--以上団員情報-----------------------------------------
+
+  //--以下出場情報-----------------------------------------
   // 出場消防データの取得
   useEffect(() => {
     const fetchLocationData = async () => {
@@ -81,79 +145,71 @@ const Admin = () => {
     };
     fetchLocationData();
   }, []);
+  //--以上出場情報----------------------------------------------
 
-// 幹部切り替え
-const toggleExecutive = async (userId: number, currentExecutive: number) => {
-  const newExecutive = currentExecutive === 1 ? 0 : 1;
+  //--以下要望確認--------------------------------------------
+  // 要望確認データの取得
+  useEffect(() => {
+    const fetchRequestsData = async () => {
+      try {
+        const response = await fetch("/api/requests/admin");
+        if (!response.ok) throw new Error("データ取得エラー");
+        const result = await response.json();
+        setData((prevData) => ({ ...prevData, requests: result.requests }));
+      } catch (error) {
+        console.error(error);
+        setError(error.message);
+      }
+    };
+    fetchRequestsData();
+  }, []);
 
-  try {
-    const res = await fetch("/api/admin/userData/executiveUpdate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: userId, executive: newExecutive }),
-    });
+  //要望status切り替え
+  const toggleStatus = async (id: number, currentStatus: number) => {
+    const newStatus = currentStatus === 1 ? 0 : 1;
 
-    const data = await res.json();
-    if (res.ok) {
-      // 成功した場合、該当ユーザーのexecutiveステータスを更新
-      setData((prevData) => ({
-        ...prevData,
-        users: prevData.users.map((user) =>
-          user.id === userId ? { ...user, executive: newExecutive } : user
-        ),
-      }));
-      alert("幹部情報を更新しました");
-    } else {
-      alert(`エラー: ${data.message}`);
+    try {
+        const res = await fetch("/api/admin/requests/update", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id, status: newStatus }),
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+            alert(data.message || "更新完了");
+            setData((prevData) => ({
+                ...prevData,
+                requests: prevData.requests.map((request) =>
+                    request.id === id ? { ...request, status: newStatus } : request
+                ),
+            }));
+        } else {
+            alert(data.message || "ステータス更新エラー");
+        }
+    } catch (error) {
+        console.error("ステータス更新エラー:", error);
+        alert("ステータス更新エラー");
     }
-  } catch (error) {
-    console.error("エラーが発生しました:", error);
-  }
 };
-
-const deleteUser = async (id: number) => {
-  try {
-    const res = await fetch("/api/admin/userData/delete", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
-    });
-
-    if (!res.ok) {
-      const errorData = await res.json();
-      alert(`削除エラー: ${errorData.message}`);
-      return;
-    }
-
-    const data = await res.json();
-    alert(data.message); // 削除完了メッセージ
-
-    // データ更新処理（削除したユーザーを除外）
-    setData((prevData) => ({
-      ...prevData,
-      users: prevData.users.filter((user) => user.id !== id),
-    }));
-  } catch (error) {
-    console.error("削除エラー:", error);
-    alert("削除中にエラーが発生しました");
-  }
-};
+  //--以上要望確認----------------------------------------------------
 
   const handleSearch = (e) => setSearchQuery(e.target.value.toLowerCase());
 
-// 検索結果をフィルタリング
-const filteredUsers = data.users.filter((user) =>
-  user.username.toLowerCase().includes(searchQuery) || 
-  (user.group && user.group.toString().toLowerCase().includes(searchQuery))
-);
+  // 検索結果をフィルタリング
+  const filteredUsers = data.users.filter(
+    (user) =>
+      user.username.toLowerCase().includes(searchQuery) ||
+      (user.group && user.group.toString().toLowerCase().includes(searchQuery))
+  );
 
-const filteredLocations = data.location.filter((log) =>
-  log.username.toLowerCase().includes(searchQuery) || 
-  (log.group && log.group.toString().toLowerCase().includes(searchQuery))
-);
+  const filteredLocations = data.location.filter(
+    (log) =>
+      log.username.toLowerCase().includes(searchQuery) ||
+      (log.group && log.group.toString().toLowerCase().includes(searchQuery))
+  );
 
-
-return (
+  return (
     <div className="flex h-screen">
       <aside className="w-1/5 bg-zinc-950 text-white p-6 text-center">
         <h2 className="text-xl font-bold mb-6">管理者メニュー</h2>
@@ -230,6 +286,7 @@ return (
             </div>
           )}
 
+          {/* 団員情報 */}
           {selectedContent === "users" && (
             <div>
               <h3 className="text-lg font-semibold">団員情報</h3>
@@ -254,11 +311,11 @@ return (
                       {user.executive === 1 ? "幹部" : "団員"}
                     </button>
                     <button
-            onClick={() => deleteUser(user.id)}
-            className={"bg-black ml-4 px-2 py-1 rounded text-white"}
-          >
-            削除
-          </button>
+                      onClick={() => deleteUser(user.id)}
+                      className={"bg-black ml-4 px-2 py-1 rounded text-white"}
+                    >
+                      削除
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -316,7 +373,7 @@ return (
               </ul>
             </div>
           )}
-
+          {/* 要望確認 */}
           {selectedContent === "requests" && (
             <div>
               <h3 className="text-lg font-semibold">要望確認</h3>
@@ -343,6 +400,19 @@ return (
                     {request.group} 分団
                     <br />
                     要望: {request.content}
+                    <br />
+                    <button
+                      className={`mt-2 px-4 py-1 text-white rounded ${
+                        request.status === 1
+                          ? "bg-red-500 hover:bg-red-700"
+                          : "bg-blue-500 hover:bg-blue-700"
+                      }`}
+                      onClick={() =>
+                        toggleStatus(request.id, request.status)
+                      }
+                    >
+                      {request.status === 1 ? "対応済" : "未対応"}
+                    </button>
                   </li>
                 ))}
               </ul>
