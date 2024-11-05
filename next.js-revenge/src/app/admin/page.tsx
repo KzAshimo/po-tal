@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 // 新しいコンポーネントをインポート
 import AdminPostForm from "../components/adminPostForm";
 import BulletinBoard from "../components/bulletinBoard";
-import { request } from "http";
 
 type UserType = {
   id: number;
@@ -18,7 +17,7 @@ type UserType = {
 const Admin = () => {
   const [data, setData] = useState<{
     requests: Array<{
-      id: number;
+      request_id: number;
       created_at: string;
       username: string;
       group: string;
@@ -165,9 +164,8 @@ const Admin = () => {
   }, []);
 
   //要望status切り替え
-  const toggleStatus = async (id: number, currentStatus: number) => {
-    const newStatus = currentStatus === 1 ? 0 : 1;
-
+  const toggleStatus = async (id: number, status: number) => {
+    const newStatus = status === 1 ? 0 : 1;
     try {
         const res = await fetch("/api/admin/requests/update", {
             method: "POST",
@@ -177,11 +175,11 @@ const Admin = () => {
         const data = await res.json();
 
         if (res.ok) {
-            alert(data.message || "更新完了");
             setData((prevData) => ({
                 ...prevData,
                 requests: prevData.requests.map((request) =>
-                    request.id === id ? { ...request, status: newStatus } : request
+                    request.request_id === id ?
+                    { ...request, status: newStatus } : request
                 ),
             }));
         } else {
@@ -191,6 +189,35 @@ const Admin = () => {
         console.error("ステータス更新エラー:", error);
         alert("ステータス更新エラー");
     }
+};
+
+//要望削除
+const deleteRequests = async (id:number) =>{
+  try{
+    const res = await fetch("/api/admin/requests/delete",{
+      method:"DELETE",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({id})
+    });
+
+    if(!res.ok){
+      const errorData = await res.json();
+      alert(`削除エラー: ${errorData.message}`);
+      return;
+  }
+
+  const data = await res.json();
+  alert(data.message); // 削除完了メッセージ
+
+  setData((prevData)=>({
+    ...prevData,
+    requests:prevData.requests.filter((request) => request.request_id !== id)
+  }));
+  }catch(error){
+    console.error("削除エラー:", error);
+    alert("削除中にエラーが発生しました");
+
+  }
 };
   //--以上要望確認----------------------------------------------------
 
@@ -385,7 +412,7 @@ const Admin = () => {
               </button>
               <ul>
                 {data.requests.map((request) => (
-                  <li key={request.id} className="p-2 bg-gray-200 mb-2 rounded">
+                  <li key={request.request_id} className="p-2 bg-gray-200 mb-2 rounded">
                     {new Date(request.created_at).toLocaleString("ja-JP", {
                       year: "numeric",
                       month: "2-digit",
@@ -408,11 +435,19 @@ const Admin = () => {
                           : "bg-blue-500 hover:bg-blue-700"
                       }`}
                       onClick={() =>
-                        toggleStatus(request.id, request.status)
+                        toggleStatus(request.request_id, request.status)
                       }
                     >
                       {request.status === 1 ? "対応済" : "未対応"}
                     </button>
+                    <br />
+                    <button
+                      onClick={() => deleteRequests(request.request_id)}
+                      className={"bg-black ml-4 px-2 py-1 rounded text-white my-2"}
+                    >
+                      削除
+                    </button>
+
                   </li>
                 ))}
               </ul>

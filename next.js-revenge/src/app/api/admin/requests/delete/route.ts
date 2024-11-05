@@ -7,7 +7,7 @@ export async function DELETE (req:Request){
         const {id} = await req.json();
 
         const [deleteResult] = await connection.execute<OkPacket>(
-            `DELETE FROM requests WHERE id = ?`,
+            `DELETE FROM requests WHERE request_id = ?`,
             [id]
         );
 

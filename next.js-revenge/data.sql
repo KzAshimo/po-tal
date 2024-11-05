@@ -18,7 +18,7 @@ CREATE TABLE requests (
   user_id INT,
   group INT,
   content TEXT,
-  status ENUM('未対応', '対応済み') DEFAULT '未対応',
+  status TINYINT DEFAULT 0, 
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE

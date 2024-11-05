@@ -3,12 +3,11 @@ import { NextResponse } from "next/server";
 import { OkPacket } from 'mysql2';
 
 export async function POST(req: Request) {
-    console.log("Request received at /api/admin/requests/update");
     try {
         const { id, status } = await req.json();
 
         const [updateResult] = await connection.execute<OkPacket>(
-            `UPDATE requests SET status = ? WHERE id = ?`,
+            `UPDATE requests SET status = ? WHERE request_id = ?`,
             [status, id]
         );
 
