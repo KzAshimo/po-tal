@@ -223,17 +223,26 @@ const deleteRequests = async (id:number) =>{
 
   const handleSearch = (e) => setSearchQuery(e.target.value.toLowerCase());
 
-  // 検索結果をフィルタリング
+//--検索-------------------------------------------------------------
+  //ユーザー情報
   const filteredUsers = data.users.filter(
     (user) =>
       user.username.toLowerCase().includes(searchQuery) ||
       (user.group && user.group.toString().toLowerCase().includes(searchQuery))
   );
-
+  //出場情報
   const filteredLocations = data.location.filter(
     (log) =>
       log.username.toLowerCase().includes(searchQuery) ||
-      (log.group && log.group.toString().toLowerCase().includes(searchQuery))
+      (log.group && log.group.toString().toLowerCase().includes(searchQuery)) ||
+      log.start_time.toString().includes(searchQuery) || // 開始時刻の検索
+      (log.end_time && log.end_time.toString().includes(searchQuery)) // 終了時刻の検索
+  );  //要望情報
+  const filteredRequests = data.requests.filter(
+    (request) =>
+      request.username.toLowerCase().includes(searchQuery) ||
+      (request.group && request.group.toString().toLowerCase().includes(searchQuery)) ||
+      request.content.toLowerCase().includes(searchQuery) // 要望内容を検索
   );
 
   return (
@@ -359,7 +368,7 @@ const deleteRequests = async (id:number) =>{
                 閉じる
               </button>
               <ul>
-                {data.location.map((log) => {
+                {filteredLocations.map((log) => {
                   // 秒数を時間と分に変換
                   const hours = Math.floor(log.duration / 3600); // 1時間 = 3600秒
                   const minutes = Math.floor((log.duration % 3600) / 60); // 1分 = 60秒
@@ -411,7 +420,7 @@ const deleteRequests = async (id:number) =>{
                 閉じる
               </button>
               <ul>
-                {data.requests.map((request) => (
+                {filteredRequests.map((request) => (
                   <li key={request.request_id} className="p-2 bg-gray-200 mb-2 rounded">
                     {new Date(request.created_at).toLocaleString("ja-JP", {
                       year: "numeric",
