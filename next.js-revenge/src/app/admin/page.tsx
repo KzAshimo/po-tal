@@ -41,6 +41,9 @@ const Admin = () => {
   const [error, setError] = useState(null);
   const [selectedContent, setSelectedContent] = useState("");
   const [searchQuery, setSearchQuery] = useState(""); // 検索クエリ状態追加
+
+  const [startDate, setStartDate] = useState(""); // 開始日
+  const [endDate, setEndDate] = useState(""); // 終了日
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -231,20 +234,29 @@ const deleteRequests = async (id:number) =>{
       (user.group && user.group.toString().toLowerCase().includes(searchQuery))
   );
   //出場情報
-  const filteredLocations = data.location.filter(
-    (log) =>
-      log.username.toLowerCase().includes(searchQuery) ||
-      (log.group && log.group.toString().toLowerCase().includes(searchQuery)) ||
-      log.start_time.toString().includes(searchQuery) || // 開始時刻の検索
-      (log.end_time && log.end_time.toString().includes(searchQuery)) // 終了時刻の検索
-  );  //要望情報
+  const filteredLocations = data.location.filter((log) => {
+    const matchesSearchQuery =
+      log.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (log.group && log.group.toString().toLowerCase().includes(searchQuery));
+    
+    const logStartDate = new Date(log.start_time);
+    const logEndDate = new Date(log.end_time);
+    const selectedStartDate = startDate ? new Date(startDate) : null;
+    const selectedEndDate = endDate ? new Date(endDate) : null;
+
+    const matchesDateRange =
+      (!selectedStartDate || logStartDate >= selectedStartDate) &&
+      (!selectedEndDate || logEndDate <= selectedEndDate);
+
+    return matchesSearchQuery && matchesDateRange;
+  }); //要望情報
   const filteredRequests = data.requests.filter(
     (request) =>
       request.username.toLowerCase().includes(searchQuery) ||
       (request.group && request.group.toString().toLowerCase().includes(searchQuery)) ||
       request.content.toLowerCase().includes(searchQuery) // 要望内容を検索
   );
-
+//--以上検索---------------------------------------------------------------
   return (
     <div className="flex h-screen">
       <aside className="w-1/5 bg-zinc-950 text-white p-6 text-center">
@@ -314,7 +326,7 @@ const deleteRequests = async (id:number) =>{
             <div className="mb-4">
               <input
                 type="text"
-                placeholder="検索"
+                placeholder="キーワード検索"
                 className="w-full py-2 px-4 border rounded"
                 value={searchQuery}
                 onChange={handleSearch}
@@ -360,6 +372,18 @@ const deleteRequests = async (id:number) =>{
           {/* 出場情報*/}
           {selectedContent === "location" && (
             <div>
+      <input
+        type="date"
+        value={startDate}
+        onChange={(e) => setStartDate(e.target.value)}
+        className="p-2 border border-gray-300 rounded mb-3 mr-2"
+      />
+      <input
+        type="date"
+        value={endDate}
+        onChange={(e) => setEndDate(e.target.value)}
+        className="p-2 border border-gray-300 rounded mb-3"
+      />
               <h3 className="text-lg font-semibold">出場情報</h3>
               <button
                 className="w-sm text-left py-2 px-4 rounded bg-slate-600 hover:bg-slate-300 text-white my-3"
