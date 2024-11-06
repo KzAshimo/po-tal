@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 
+interface AdminPostProps{
+  onClose:()=>void;
+}
 
-const AdminPostForm = () =>{
+const AdminPostForm = ({onClose}:AdminPostProps) =>{
     const [title,setTitle] = useState("");
     const [content,setContent] = useState("");
     const [error,setError] = useState<string | null>(null);
@@ -29,6 +32,13 @@ const AdminPostForm = () =>{
     return(
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md">
         <h2 className="text-xl font-bold mb-4">新規投稿</h2>
+        <button
+        onClick={onClose}
+        className="w-sm text-left py-2 px-4 rounded bg-slate-600 hover:bg-slate-300 text-white my-1"
+      >
+        閉じる
+      </button>
+
         {error && <p className="text-red-500">{error}</p>}
         {success && <p className="text-green-500">投稿が完了しました！</p>}
         

@@ -264,14 +264,14 @@ const Admin = () => {
       (request.group &&
         request.group.toString().toLowerCase().includes(searchQuery)) ||
       request.content.toLowerCase().includes(searchQuery); // 要望内容を検索
-  
+
     // 日付フィルタリング（開始日以降）
     const createdAt = new Date(request.created_at);
     const isAfterStartDate = !startDate || createdAt >= new Date(startDate);
-  
+
     // 両方の条件を満たす場合のみ返す
     return matchesSearchQuery && isAfterStartDate;
-  });  //--以上検索---------------------------------------------------------------
+  }); //--以上検索---------------------------------------------------------------
   return (
     <div className="flex h-screen">
       <aside className="w-1/5 bg-zinc-950 text-white p-6 text-center">
@@ -394,7 +394,10 @@ const Admin = () => {
               >
                 閉じる
               </button>
-              <label className="text-gray-700 font-semibold my-3 mx-2">日付検索:</label>
+              <br />
+              <label className="text-gray-700 font-semibold my-3 mx-2">
+                日付検索:
+              </label>
               <input
                 type="date"
                 value={startDate}
@@ -458,132 +461,148 @@ const Admin = () => {
             </div>
           )}
 
-{/* // 要望確認表示 */}
-{selectedContent === "requests" && (
-  <div>
-    <h3 className="text-lg font-semibold">要望確認</h3>
+          {/* // 要望確認表示 */}
+          {selectedContent === "requests" && (
+            <div>
+              <h3 className="text-lg font-semibold">要望確認</h3>
 
-            {/* 日付検索エリア  */}
-  <div className="mt-3 flex">
-    <label className="text-gray-700 font-semibold my-3 mx-2">日付検索:</label>
-    <input
-      type="date"
-      value={startDate}
-      onChange={(e) => setStartDate(e.target.value)}
-      className="block w-1/2 mt-1 px-4 py-2 border rounded bg-gray-100 focus:outline-none focus:border-blue-500"
-    />
-  </div>
-
-    <button
-      className="w-sm text-left py-2 px-4 rounded bg-slate-600 hover:bg-slate-300 text-white my-3"
-      onClick={() => setSelectedContent("")}
-    >
-      閉じる
-    </button>
-
-    {/* 切り替えボタン */}
-    <button
-      onClick={() => setIsShowingCompleted(!isShowingCompleted)}
-      className="px-4 py-2 mb-4 rounded bg-green-500 text-white mx-2"
-    >
-      {isShowingCompleted ? "未対応へ" : "対応済へ"}
-    </button>
-
-    {/* 未対応 or 対応済 リストの切り替え */}
-    {isShowingCompleted ? (
-      // 対応済の要望リスト
-      <div>
-        <h4 className="text-md font-semibold mt-4">対応済</h4>
-        <ul>
-          {filteredRequests
-            .filter((request) => request.status === 1)
-            .map((request) => (
-              <li
-                key={request.request_id}
-                className="p-2 bg-gray-200 mb-2 rounded"
+              <button
+                className="w-sm text-left py-2 px-4 rounded bg-slate-600 hover:bg-slate-300 text-white my-3"
+                onClick={() => setSelectedContent("")}
               >
-                {new Date(request.created_at).toLocaleString("ja-JP", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second: "2-digit",
-                })}
-                <br />
-                要望者: {request.username}
-                <br />
-                {request.group} 分団
-                <br />
-                要望: {request.content}
-                <br />
-                <button
-                  className="mt-2 px-4 py-1 text-white rounded bg-red-500 hover:bg-red-700"
-                  onClick={() => toggleStatus(request.request_id, request.status)}
-                >
-                  対応済
-                </button>
-                <br />
-                <button
-                  onClick={() => deleteRequests(request.request_id)}
-                  className="bg-black ml-4 px-2 py-1 rounded text-white my-2"
-                >
-                  削除
-                </button>
-              </li>
-            ))}
-        </ul>
-      </div>
-    ) : (
-      // 未対応の要望リスト
-      <div>
-        <h4 className="text-md font-semibold mt-4">未対応</h4>
-        <ul>
-          {filteredRequests
-            .filter((request) => request.status === 0)
-            .map((request) => (
-              <li
-                key={request.request_id}
-                className="p-2 bg-gray-200 mb-2 rounded"
-              >
-                {new Date(request.created_at).toLocaleString("ja-JP", {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second: "2-digit",
-                })}
-                <br />
-                要望者: {request.username}
-                <br />
-                {request.group} 分団
-                <br />
-                要望: {request.content}
-                <br />
-                <button
-                  className="mt-2 px-4 py-1 text-white rounded bg-blue-500 hover:bg-blue-700"
-                  onClick={() => toggleStatus(request.request_id, request.status)}
-                >
-                  未対応
-                </button>
-                <br />
-                <button
-                  onClick={() => deleteRequests(request.request_id)}
-                  className="bg-black ml-4 px-2 py-1 rounded text-white my-2"
-                >
-                  削除
-                </button>
-              </li>
-            ))}
-        </ul>
-      </div>
-    )}
-  </div>
-)}
-          {selectedContent === "post" && <AdminPostForm />}
-          {selectedContent === "bulletin" && <BulletinBoard />}
+                閉じる
+              </button>
 
+              {/* 切り替えボタン */}
+              <button
+                onClick={() => setIsShowingCompleted(!isShowingCompleted)}
+                className="px-4 py-2 mb-4 rounded bg-green-500 text-white mx-2"
+              >
+                {isShowingCompleted ? "未対応へ" : "対応済へ"}
+              </button>
+
+              {/* 日付検索エリア  */}
+              <div className="mt-3 flex">
+                <label className="text-gray-700 font-semibold my-3 mx-2">
+                  日付検索:
+                </label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="block w-1/2 mt-1 px-4 py-2 border rounded bg-gray-100 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              {/* 未対応 or 対応済 リストの切り替え */}
+              {isShowingCompleted ? (
+                // 対応済の要望リスト
+                <div>
+                  <h4 className="text-md font-semibold mt-4">対応済</h4>
+                  <ul>
+                    {filteredRequests
+                      .filter((request) => request.status === 1)
+                      .map((request) => (
+                        <li
+                          key={request.request_id}
+                          className="p-2 bg-gray-200 mb-2 rounded"
+                        >
+                          {new Date(request.created_at).toLocaleString(
+                            "ja-JP",
+                            {
+                              year: "numeric",
+                              month: "2-digit",
+                              day: "2-digit",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              second: "2-digit",
+                            }
+                          )}
+                          <br />
+                          要望者: {request.username}
+                          <br />
+                          {request.group} 分団
+                          <br />
+                          要望: {request.content}
+                          <br />
+                          <button
+                            className="mt-2 px-4 py-1 text-white rounded bg-red-500 hover:bg-red-700"
+                            onClick={() =>
+                              toggleStatus(request.request_id, request.status)
+                            }
+                          >
+                            対応済
+                          </button>
+                          <button
+                            onClick={() => deleteRequests(request.request_id)}
+                            className="bg-black ml-4 px-2 py-1 rounded text-white my-2"
+                          >
+                            削除
+                          </button>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              ) : (
+                // 未対応の要望リスト
+                <div>
+                  <h4 className="text-md font-semibold mt-4">未対応</h4>
+                  <ul>
+                    {filteredRequests
+                      .filter((request) => request.status === 0)
+                      .map((request) => (
+                        <li
+                          key={request.request_id}
+                          className="p-2 bg-gray-200 mb-2 rounded"
+                        >
+                          {new Date(request.created_at).toLocaleString(
+                            "ja-JP",
+                            {
+                              year: "numeric",
+                              month: "2-digit",
+                              day: "2-digit",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              second: "2-digit",
+                            }
+                          )}
+                          <br />
+                          要望者: {request.username}
+                          <br />
+                          {request.group} 分団
+                          <br />
+                          要望: {request.content}
+                          <br />
+                          <button
+                            className="mt-2 px-4 py-1 text-white rounded bg-blue-500 hover:bg-blue-700"
+                            onClick={() =>
+                              toggleStatus(request.request_id, request.status)
+                            }
+                          >
+                            未対応
+                          </button>
+                          <button
+                            onClick={() => deleteRequests(request.request_id)}
+                            className="bg-black ml-4 px-2 py-1 rounded text-white my-2"
+                          >
+                            削除
+                          </button>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+          {selectedContent === "post" && (
+            <AdminPostForm onClose={() => setSelectedContent(null)} />
+          )}
+          {selectedContent === "bulletin" && (
+            <BulletinBoard
+              isAdmin={true}
+              onClose={() => setSelectedContent(null)}
+            />
+          )}
           {!selectedContent && (
             <p>ここに選択されたメニューの内容が表示されます。</p>
           )}

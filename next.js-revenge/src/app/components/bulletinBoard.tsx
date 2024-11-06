@@ -7,7 +7,12 @@ interface Post {
   created_at: string;
 }
 
-const BulletinBoard = () => {
+interface BulletinBoardProps {
+  isAdmin?: boolean;
+  onClose: () => void;
+}
+
+const BulletinBoard = ({ isAdmin = false, onClose }: BulletinBoardProps) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -15,7 +20,7 @@ const BulletinBoard = () => {
     const fetchPosts = async () => {
       try {
         const response = await fetch("/api/board/post");
-        if (!response) {
+        if (!response.ok) {
           throw new Error("データ取得エラー");
         }
         const data = await response.json();
@@ -26,17 +31,50 @@ const BulletinBoard = () => {
     };
     fetchPosts();
   }, []);
+
+  const handleDelete = async (postId: number) => {
+    try {
+      const response = await fetch(`/api/board/delete`, {
+        method: "DELETE",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({id:postId})
+      });
+      if (!response.ok) {
+        throw new Error("削除に失敗しました");
+      }
+      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
+    } catch (err) {
+      setError((err as Error).message);
+    }
+  };
+
   return (
-    <div className="p-4">
+    <div className="p-1">
       <h2 className="text-xl font-bold mb-4">掲示板</h2>
+      {isAdmin &&
+      <button
+        onClick={onClose}
+        className="w-sm text-left py-2 px-4 rounded bg-slate-600 hover:bg-slate-300 text-white my-1"
+      >
+        閉じる
+      </button>}
       {error ? (
         <p className="text-red-500">{error}</p>
       ) : (
         <ul>
-          {posts?.map((post) => (
+          {posts.map((post) => (
             <li key={post.id} className="bg-gray-100 p-4 mb-2 rounded shadow">
               <small>{new Date(post.created_at).toLocaleString("ja-JP")}</small>
-              <h3 className="text-lg font-semibold">{post.title}</h3>
+              {isAdmin && (
+                <button
+                  onClick={() => handleDelete(post.id)}
+                  className="mt-2 px-4 py-1 text-white rounded bg-black hover:bg-red-700 mx-3"
+                >
+                  削除
+                </button>
+              )}
+
+              <h3 className="text-lg font-semibold my-1">{post.title}</h3>
               <p>{post.content}</p>
             </li>
           ))}
