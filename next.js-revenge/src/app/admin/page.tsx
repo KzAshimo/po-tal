@@ -22,7 +22,7 @@ const Admin = () => {
       username: string;
       group: string;
       content: string;
-      status:number;
+      status: number;
     }>;
     users: UserType[];
     location: Array<{
@@ -41,6 +41,7 @@ const Admin = () => {
   const [error, setError] = useState(null);
   const [selectedContent, setSelectedContent] = useState("");
   const [searchQuery, setSearchQuery] = useState(""); // 検索クエリ状態追加
+  const [isShowingCompleted, setIsShowingCompleted] = useState(false);
 
   const [startDate, setStartDate] = useState(""); // 開始日
   const [endDate, setEndDate] = useState(""); // 終了日
@@ -170,63 +171,65 @@ const Admin = () => {
   const toggleStatus = async (id: number, status: number) => {
     const newStatus = status === 1 ? 0 : 1;
     try {
-        const res = await fetch("/api/admin/requests/update", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ id, status: newStatus }),
-        });
-        const data = await res.json();
+      const res = await fetch("/api/admin/requests/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status: newStatus }),
+      });
+      const data = await res.json();
 
-        if (res.ok) {
-            setData((prevData) => ({
-                ...prevData,
-                requests: prevData.requests.map((request) =>
-                    request.request_id === id ?
-                    { ...request, status: newStatus } : request
-                ),
-            }));
-        } else {
-            alert(data.message || "ステータス更新エラー");
-        }
+      if (res.ok) {
+        setData((prevData) => ({
+          ...prevData,
+          requests: prevData.requests.map((request) =>
+            request.request_id === id
+              ? { ...request, status: newStatus }
+              : request
+          ),
+        }));
+      } else {
+        alert(data.message || "ステータス更新エラー");
+      }
     } catch (error) {
-        console.error("ステータス更新エラー:", error);
-        alert("ステータス更新エラー");
+      console.error("ステータス更新エラー:", error);
+      alert("ステータス更新エラー");
     }
-};
+  };
 
-//要望削除
-const deleteRequests = async (id:number) =>{
-  try{
-    const res = await fetch("/api/admin/requests/delete",{
-      method:"DELETE",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({id})
-    });
+  //要望削除
+  const deleteRequests = async (id: number) => {
+    try {
+      const res = await fetch("/api/admin/requests/delete", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
 
-    if(!res.ok){
-      const errorData = await res.json();
-      alert(`削除エラー: ${errorData.message}`);
-      return;
-  }
+      if (!res.ok) {
+        const errorData = await res.json();
+        alert(`削除エラー: ${errorData.message}`);
+        return;
+      }
 
-  const data = await res.json();
-  alert(data.message); // 削除完了メッセージ
+      const data = await res.json();
+      alert(data.message); // 削除完了メッセージ
 
-  setData((prevData)=>({
-    ...prevData,
-    requests:prevData.requests.filter((request) => request.request_id !== id)
-  }));
-  }catch(error){
-    console.error("削除エラー:", error);
-    alert("削除中にエラーが発生しました");
-
-  }
-};
+      setData((prevData) => ({
+        ...prevData,
+        requests: prevData.requests.filter(
+          (request) => request.request_id !== id
+        ),
+      }));
+    } catch (error) {
+      console.error("削除エラー:", error);
+      alert("削除中にエラーが発生しました");
+    }
+  };
   //--以上要望確認----------------------------------------------------
 
   const handleSearch = (e) => setSearchQuery(e.target.value.toLowerCase());
 
-//--検索-------------------------------------------------------------
+  //--検索-------------------------------------------------------------
   //ユーザー情報
   const filteredUsers = data.users.filter(
     (user) =>
@@ -238,7 +241,7 @@ const deleteRequests = async (id:number) =>{
     const matchesSearchQuery =
       log.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (log.group && log.group.toString().toLowerCase().includes(searchQuery));
-    
+
     const logStartDate = new Date(log.start_time);
     const logEndDate = new Date(log.end_time);
     const selectedStartDate = startDate ? new Date(startDate) : null;
@@ -249,14 +252,26 @@ const deleteRequests = async (id:number) =>{
       (!selectedEndDate || logEndDate <= selectedEndDate);
 
     return matchesSearchQuery && matchesDateRange;
-  }); //要望情報
-  const filteredRequests = data.requests.filter(
-    (request) =>
+  });
+  const resetDates = () => {
+    setStartDate("");
+    setEndDate("");
+  };
+  //要望情報
+  const filteredRequests = data.requests.filter((request) => {
+    const matchesSearchQuery =
       request.username.toLowerCase().includes(searchQuery) ||
-      (request.group && request.group.toString().toLowerCase().includes(searchQuery)) ||
-      request.content.toLowerCase().includes(searchQuery) // 要望内容を検索
-  );
-//--以上検索---------------------------------------------------------------
+      (request.group &&
+        request.group.toString().toLowerCase().includes(searchQuery)) ||
+      request.content.toLowerCase().includes(searchQuery); // 要望内容を検索
+  
+    // 日付フィルタリング（開始日以降）
+    const createdAt = new Date(request.created_at);
+    const isAfterStartDate = !startDate || createdAt >= new Date(startDate);
+  
+    // 両方の条件を満たす場合のみ返す
+    return matchesSearchQuery && isAfterStartDate;
+  });  //--以上検索---------------------------------------------------------------
   return (
     <div className="flex h-screen">
       <aside className="w-1/5 bg-zinc-950 text-white p-6 text-center">
@@ -372,18 +387,6 @@ const deleteRequests = async (id:number) =>{
           {/* 出場情報*/}
           {selectedContent === "location" && (
             <div>
-      <input
-        type="date"
-        value={startDate}
-        onChange={(e) => setStartDate(e.target.value)}
-        className="p-2 border border-gray-300 rounded mb-3 mr-2"
-      />
-      <input
-        type="date"
-        value={endDate}
-        onChange={(e) => setEndDate(e.target.value)}
-        className="p-2 border border-gray-300 rounded mb-3"
-      />
               <h3 className="text-lg font-semibold">出場情報</h3>
               <button
                 className="w-sm text-left py-2 px-4 rounded bg-slate-600 hover:bg-slate-300 text-white my-3"
@@ -391,6 +394,27 @@ const deleteRequests = async (id:number) =>{
               >
                 閉じる
               </button>
+              <label className="text-gray-700 font-semibold my-3 mx-2">日付検索:</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="p-2 border border-gray-300 rounded mb-3 mr-2"
+              />
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="p-2 border border-gray-300 rounded mb-3"
+              />
+              {/* リセットボタン */}
+              <button
+                onClick={resetDates}
+                className="p-2 bg-blue-500 text-white rounded mx-2"
+              >
+                日付を削除
+              </button>
+
               <ul>
                 {filteredLocations.map((log) => {
                   // 秒数を時間と分に変換
@@ -433,60 +457,130 @@ const deleteRequests = async (id:number) =>{
               </ul>
             </div>
           )}
-          {/* 要望確認 */}
-          {selectedContent === "requests" && (
-            <div>
-              <h3 className="text-lg font-semibold">要望確認</h3>
-              <button
-                className="w-sm text-left py-2 px-4 rounded bg-slate-600 hover:bg-slate-300 text-white my-3"
-                onClick={() => setSelectedContent("")}
+
+{/* // 要望確認表示 */}
+{selectedContent === "requests" && (
+  <div>
+    <h3 className="text-lg font-semibold">要望確認</h3>
+
+            {/* 日付検索エリア  */}
+  <div className="mt-3 flex">
+    <label className="text-gray-700 font-semibold my-3 mx-2">日付検索:</label>
+    <input
+      type="date"
+      value={startDate}
+      onChange={(e) => setStartDate(e.target.value)}
+      className="block w-1/2 mt-1 px-4 py-2 border rounded bg-gray-100 focus:outline-none focus:border-blue-500"
+    />
+  </div>
+
+    <button
+      className="w-sm text-left py-2 px-4 rounded bg-slate-600 hover:bg-slate-300 text-white my-3"
+      onClick={() => setSelectedContent("")}
+    >
+      閉じる
+    </button>
+
+    {/* 切り替えボタン */}
+    <button
+      onClick={() => setIsShowingCompleted(!isShowingCompleted)}
+      className="px-4 py-2 mb-4 rounded bg-green-500 text-white mx-2"
+    >
+      {isShowingCompleted ? "未対応へ" : "対応済へ"}
+    </button>
+
+    {/* 未対応 or 対応済 リストの切り替え */}
+    {isShowingCompleted ? (
+      // 対応済の要望リスト
+      <div>
+        <h4 className="text-md font-semibold mt-4">対応済</h4>
+        <ul>
+          {filteredRequests
+            .filter((request) => request.status === 1)
+            .map((request) => (
+              <li
+                key={request.request_id}
+                className="p-2 bg-gray-200 mb-2 rounded"
               >
-                閉じる
-              </button>
-              <ul>
-                {filteredRequests.map((request) => (
-                  <li key={request.request_id} className="p-2 bg-gray-200 mb-2 rounded">
-                    {new Date(request.created_at).toLocaleString("ja-JP", {
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      second: "2-digit",
-                    })}
-                    <br />
-                    要望者:{request.username}
-                    <br />
-                    {request.group} 分団
-                    <br />
-                    要望: {request.content}
-                    <br />
-                    <button
-                      className={`mt-2 px-4 py-1 text-white rounded ${
-                        request.status === 1
-                          ? "bg-red-500 hover:bg-red-700"
-                          : "bg-blue-500 hover:bg-blue-700"
-                      }`}
-                      onClick={() =>
-                        toggleStatus(request.request_id, request.status)
-                      }
-                    >
-                      {request.status === 1 ? "対応済" : "未対応"}
-                    </button>
-                    <br />
-                    <button
-                      onClick={() => deleteRequests(request.request_id)}
-                      className={"bg-black ml-4 px-2 py-1 rounded text-white my-2"}
-                    >
-                      削除
-                    </button>
-
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
+                {new Date(request.created_at).toLocaleString("ja-JP", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                })}
+                <br />
+                要望者: {request.username}
+                <br />
+                {request.group} 分団
+                <br />
+                要望: {request.content}
+                <br />
+                <button
+                  className="mt-2 px-4 py-1 text-white rounded bg-red-500 hover:bg-red-700"
+                  onClick={() => toggleStatus(request.request_id, request.status)}
+                >
+                  対応済
+                </button>
+                <br />
+                <button
+                  onClick={() => deleteRequests(request.request_id)}
+                  className="bg-black ml-4 px-2 py-1 rounded text-white my-2"
+                >
+                  削除
+                </button>
+              </li>
+            ))}
+        </ul>
+      </div>
+    ) : (
+      // 未対応の要望リスト
+      <div>
+        <h4 className="text-md font-semibold mt-4">未対応</h4>
+        <ul>
+          {filteredRequests
+            .filter((request) => request.status === 0)
+            .map((request) => (
+              <li
+                key={request.request_id}
+                className="p-2 bg-gray-200 mb-2 rounded"
+              >
+                {new Date(request.created_at).toLocaleString("ja-JP", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                })}
+                <br />
+                要望者: {request.username}
+                <br />
+                {request.group} 分団
+                <br />
+                要望: {request.content}
+                <br />
+                <button
+                  className="mt-2 px-4 py-1 text-white rounded bg-blue-500 hover:bg-blue-700"
+                  onClick={() => toggleStatus(request.request_id, request.status)}
+                >
+                  未対応
+                </button>
+                <br />
+                <button
+                  onClick={() => deleteRequests(request.request_id)}
+                  className="bg-black ml-4 px-2 py-1 rounded text-white my-2"
+                >
+                  削除
+                </button>
+              </li>
+            ))}
+        </ul>
+      </div>
+    )}
+  </div>
+)}
           {selectedContent === "post" && <AdminPostForm />}
           {selectedContent === "bulletin" && <BulletinBoard />}
 
