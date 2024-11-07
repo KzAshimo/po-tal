@@ -9,7 +9,6 @@ export async function GET(){
       JOIN users ON requests.user_id = users.id
       ORDER BY created_at DESC`
     );
-    console.log(requestUsers);
 
     return NextResponse.json({requests:requestUsers});
   }catch(error){

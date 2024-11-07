@@ -12,12 +12,14 @@ if(!token){
 }
 try{
     //トークンを検証
-    const decoded = jwt.verify(token,SECRET_KEY) as {username:string};
+    const decoded = jwt.verify(token,SECRET_KEY) as {username:string;executive:number};
 
     const username = decoded.username;
+    const executive = decoded.executive;
 
-    //成功時にユーザー名を返す
-    return NextResponse.json({username});
+
+    //成功時にユーザー名と幹部情報を返す
+    return NextResponse.json({username,executive});
 }catch(error){
     return NextResponse.json({message:'無効なトークン'},{status:403});
 

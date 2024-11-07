@@ -18,7 +18,8 @@ export async function POST(req:Request){
             //jwtトークンを生成
             const token = jwt.sign({
                 id:user.id,
-                username:user.username
+                username:user.username,
+                executive:user.executive,
             },
             SECRET_KEY,
             {expiresIn:'1h'}

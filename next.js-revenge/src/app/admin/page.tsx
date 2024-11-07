@@ -486,12 +486,20 @@ const Admin = () => {
                 <label className="text-gray-700 font-semibold my-3 mx-2">
                   日付検索:
                 </label>
+                <div className="flex">
                 <input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="block w-1/2 mt-1 px-4 py-2 border rounded bg-gray-100 focus:outline-none focus:border-blue-500"
+                  className="block mt-1 px-4 py-2 border rounded bg-gray-100 focus:outline-none focus:border-blue-500"
                 />
+              </div>
+              <button
+                onClick={resetDates}
+                className="p-2 bg-blue-500 text-white rounded mx-2"
+              >
+                日付を削除
+              </button>
               </div>
 
               {/* 未対応 or 対応済 リストの切り替え */}

@@ -10,6 +10,7 @@ const Main: React.FC = () => {
   const [dispatchModal, setDispatchModal] = useState(false);
   const [requestModal, setRequestModal] = useState(false);
   const [username, setUsername] = useState("");
+  const [isExecutive, setIsExecutive] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -27,6 +28,7 @@ const Main: React.FC = () => {
       const data = await res.json();
       if (res.ok) {
         setUsername(data.username);
+        setIsExecutive(data.executive === 1);
       } else {
         alert("エラー: " + data.message);
         router.push("/");
@@ -66,26 +68,26 @@ const Main: React.FC = () => {
     router.push("/");
   };
 
-  const onSubmitReq = async(group:number,content:string) =>{
+  const onSubmitReq = async (group: number, content: string) => {
     const token = localStorage.getItem("token");
-    const res = await fetch("/api/requests/main",{
-      method:"POST",
+    const res = await fetch("/api/requests/main", {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ group, content}),
-    })
+      body: JSON.stringify({ group, content }),
+    });
 
-    if(res.ok){
+    if (res.ok) {
       alert("送信完了");
-    }else{
+    } else {
       alert("送信失敗");
     }
-  }
+  };
 
   return (
-    <>
+    <div className="h-screen bg-cyan-100">
       <div className="flex bg-white p-3">
         <h1 className="mx-5 p-2">
           ようこそ{" "}
@@ -102,8 +104,7 @@ const Main: React.FC = () => {
         </button>
       </div>
 
-      
-      <div className="flex flex-wrap items-center justify-center h-screen bg-cyan-100">
+      <div className="flex flex-wrap items-center justify-center">
         <form className="w-1/3 h-auto p-8 bg-slate-100 shadow-lg rounded m-5">
           <h1 className="text-2xl font-bold">出場報告</h1>
           <p className="py-2">
@@ -118,35 +119,40 @@ const Main: React.FC = () => {
           </button>
         </form>
 
-        <form className="w-1/3 h-auto p-8 bg-slate-100 shadow-lg rounded m-5">
-          <h1 className="text-2xl font-bold">本部へ要望</h1>
-          <p className="py-1">
-            本部へ要望を行います。
-            <br />
-            なお、こちらの機能は幹部のみ使用可能です。
-          </p>
-          <button
-            type="button"
-            className="bg-teal-500 text-white py-2 rounded mt-1 hover:bg-emerald-600 px-1"
-            onClick={() => setRequestModal(true)}
-          >
-            要望を行う
-          </button>
-        </form>
+        {isExecutive && ( // 条件付きレンダリング
+          <form className="w-1/3 h-auto p-8 bg-slate-100 shadow-lg rounded m-5">
+            <h1 className="text-2xl font-bold">本部へ要望</h1>
+            <p className="py-1">
+              本部へ要望を行います。
+              <br />
+              なお、こちらの機能は幹部のみ使用可能です。
+            </p>
+            <button
+              type="button"
+              className="bg-teal-500 text-white py-2 rounded mt-1 hover:bg-emerald-600 px-1"
+              onClick={() => setRequestModal(true)}
+            >
+              要望を行う
+            </button>
+          </form>
+        )}
 
         <form className="w-full p-8 bg-cyan-100 shadow-lg rounded mx-5">
-          <BulletinBoard></BulletinBoard>
+          <BulletinBoard />
         </form>
       </div>
 
       {dispatchModal && (
-        <DispatchModal onClose={() => setDispatchModal(false)} onStartDispatch={startDispatch} />
+        <DispatchModal
+          onClose={() => setDispatchModal(false)}
+          onStartDispatch={startDispatch}
+        />
       )}
 
       {requestModal && (
-        <RequestModal onClose={() => setRequestModal(false)} onSubmit={onSubmitReq}/>
+        <RequestModal onClose={() => setRequestModal(false)} onSubmit={onSubmitReq} />
       )}
-    </>
+    </div>
   );
 };
 

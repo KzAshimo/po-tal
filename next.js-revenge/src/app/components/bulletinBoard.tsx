@@ -15,11 +15,17 @@ interface BulletinBoardProps {
 const BulletinBoard = ({ isAdmin = false, onClose }: BulletinBoardProps) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [searchDate, setSearchDate] = useState<string>("");
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch("/api/board/post");
+        const url = new URL("/api/board/post", window.location.origin);
+        if (searchDate) {
+          url.searchParams.append("startDate", searchDate);
+        }
+
+        const response = await fetch(url.toString());
         if (!response.ok) {
           throw new Error("データ取得エラー");
         }
@@ -30,14 +36,14 @@ const BulletinBoard = ({ isAdmin = false, onClose }: BulletinBoardProps) => {
       }
     };
     fetchPosts();
-  }, []);
+  }, [searchDate]);
 
   const handleDelete = async (postId: number) => {
     try {
       const response = await fetch(`/api/board/delete`, {
         method: "DELETE",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({id:postId})
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: postId }),
       });
       if (!response.ok) {
         throw new Error("削除に失敗しました");
@@ -48,16 +54,40 @@ const BulletinBoard = ({ isAdmin = false, onClose }: BulletinBoardProps) => {
     }
   };
 
+  // 日付のリセット処理
+  const handleResetDate = () => {
+    setSearchDate("");
+  };
+
   return (
     <div className="p-1">
       <h2 className="text-xl font-bold mb-4">掲示板</h2>
-      {isAdmin &&
-      <button
-        onClick={onClose}
-        className="w-sm text-left py-2 px-4 rounded bg-slate-600 hover:bg-slate-300 text-white my-1"
-      >
-        閉じる
-      </button>}
+      {isAdmin && (
+        <button
+          onClick={onClose}
+          className="w-sm text-left py-2 px-4 rounded bg-slate-600 hover:bg-slate-300 text-white my-1"
+        >
+          閉じる
+        </button>
+      )}
+
+      {/* 日付フィルター */}
+      <div className="my-4">
+        <label className="mr-2">日付でフィルター:</label>
+        <input
+          type="date"
+          value={searchDate}
+          onChange={(e) => setSearchDate(e.target.value)}
+          className="border px-2 py-1"
+        />
+        <button
+          onClick={handleResetDate}
+          className="ml-2 px-4 py-1 bg-blue-500 text-white rounded hover:bg-gray-700"
+        >
+          日付を削除
+        </button>
+      </div>
+
       {error ? (
         <p className="text-red-500">{error}</p>
       ) : (
@@ -73,7 +103,6 @@ const BulletinBoard = ({ isAdmin = false, onClose }: BulletinBoardProps) => {
                   削除
                 </button>
               )}
-
               <h3 className="text-lg font-semibold my-1">{post.title}</h3>
               <p>{post.content}</p>
             </li>
