@@ -271,7 +271,9 @@ const Admin = () => {
 
     // 両方の条件を満たす場合のみ返す
     return matchesSearchQuery && isAfterStartDate;
-  }); //--以上検索---------------------------------------------------------------
+  }); 
+  
+  //--以上検索---------------------------------------------------------------
   return (
     <div className="flex h-screen">
       <aside className="w-1/5 bg-zinc-950 text-white p-6 text-center">
@@ -337,7 +339,19 @@ const Admin = () => {
           <h2 className="text-2xl font-bold mb-4">コンテンツ表示</h2>
           {error && <p className="text-red-500">エラー: {error}</p>}
 
-          {selectedContent && (
+
+          {/* 団員情報 */}
+          {selectedContent === "users" && (
+            <div>
+              <h3 className="text-lg font-semibold">団員情報</h3>
+            
+              <button
+                className="w-sm text-left py-2 px-4 rounded bg-slate-600 hover:bg-slate-300 text-white my-3"
+                onClick={() => setSelectedContent("")}
+              >
+                閉じる
+              </button>
+              {selectedContent && (
             <div className="mb-4">
               <input
                 type="text"
@@ -349,16 +363,6 @@ const Admin = () => {
             </div>
           )}
 
-          {/* 団員情報 */}
-          {selectedContent === "users" && (
-            <div>
-              <h3 className="text-lg font-semibold">団員情報</h3>
-              <button
-                className="w-sm text-left py-2 px-4 rounded bg-slate-600 hover:bg-slate-300 text-white my-3"
-                onClick={() => setSelectedContent("")}
-              >
-                閉じる
-              </button>
               <ul>
                 {filteredUsers.map((user) => (
                   <li key={user.id} className="p-2 bg-gray-200 mb-2 rounded">
@@ -417,6 +421,18 @@ const Admin = () => {
               >
                 日付を削除
               </button>
+              {selectedContent && (
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="キーワード検索"
+                className="w-full py-2 px-4 border rounded"
+                value={searchQuery}
+                onChange={handleSearch}
+              />
+            </div>
+          )}
+
 
               <ul>
                 {filteredLocations.map((log) => {
@@ -501,6 +517,18 @@ const Admin = () => {
                 日付を削除
               </button>
               </div>
+              {selectedContent && (
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="キーワード検索"
+                className="w-full py-2 px-4 border rounded mt-3"
+                value={searchQuery}
+                onChange={handleSearch}
+              />
+            </div>
+          )}
+
 
               {/* 未対応 or 対応済 リストの切り替え */}
               {isShowingCompleted ? (

@@ -16,13 +16,19 @@ const BulletinBoard = ({ isAdmin = false, onClose }: BulletinBoardProps) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [searchDate, setSearchDate] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const url = new URL("/api/board/post", window.location.origin);
+        
+        // URLに検索条件を追加
         if (searchDate) {
           url.searchParams.append("startDate", searchDate);
+        }
+        if (searchQuery) {
+          url.searchParams.append("searchTerm", searchQuery); // queryで一括検索
         }
 
         const response = await fetch(url.toString());
@@ -36,7 +42,7 @@ const BulletinBoard = ({ isAdmin = false, onClose }: BulletinBoardProps) => {
       }
     };
     fetchPosts();
-  }, [searchDate]);
+  }, [searchDate, searchQuery]);
 
   const handleDelete = async (postId: number) => {
     try {
@@ -57,6 +63,12 @@ const BulletinBoard = ({ isAdmin = false, onClose }: BulletinBoardProps) => {
   // 日付のリセット処理
   const handleResetDate = () => {
     setSearchDate("");
+  };
+
+
+  // キーワードの検索処理
+  const handleSearchQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
   };
 
   return (
@@ -86,6 +98,17 @@ const BulletinBoard = ({ isAdmin = false, onClose }: BulletinBoardProps) => {
         >
           日付を削除
         </button>
+      </div>
+
+      {/* キーワード検索フィルター */}
+      <div className="my-4">
+        <input
+          type="text"
+          placeholder="キーワード検索"
+          value={searchQuery}
+          onChange={handleSearchQueryChange}
+          className="w-full py-2 px-4 border rounded"
+        />
       </div>
 
       {error ? (

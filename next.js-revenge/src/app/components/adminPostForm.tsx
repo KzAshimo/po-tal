@@ -10,7 +10,7 @@ const AdminPostForm = ({onClose}:AdminPostProps) =>{
     const [error,setError] = useState<string | null>(null);
     const [success,setSuccess] = useState(false);
 
-    const handleSubmit = async(e:React.FocusEvent) =>{
+    const handleSubmit = async(e:React.FormEvent) =>{
         e.preventDefault();
 
         try{
