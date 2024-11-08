@@ -36,8 +36,9 @@ export async function POST(request: NextRequest) {
 
     //ユーザーが幹部か確認
     const [result] = await connection.query("SELECT executive FROM users WHERE id = ?",[userId]);
-    const isExecutive = result[0]?.executive === 1;
 
+    const executiveResult = result as { executive: number }[];
+    const isExecutive = executiveResult[0]?.executive === 1;
     if(!isExecutive){
       return NextResponse.json({message:"幹部のみの機能です"},{status:403});
     }

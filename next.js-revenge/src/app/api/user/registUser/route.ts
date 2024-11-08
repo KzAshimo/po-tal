@@ -19,7 +19,7 @@ export async function POST(req:Request){
     }
 
     try{
-        const result = await connection.execute(
+        await connection.execute(
             'INSERT INTO users (username, password, `group`) VALUES (?, ?, ?)', 
       [username, password, group]
     );

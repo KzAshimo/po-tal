@@ -6,7 +6,7 @@ type RequestModalProps = {
 };
 
 const RequestModal: React.FC<RequestModalProps> = ({ onClose,onSubmit }) => {
-  const [group,setGroup] = useState<number>();
+  const [group,setGroup] = useState<number | undefined>(undefined);
   const [content,setContent] = useState<string>("");
   const [showConfirmModal,setShowConfirmModal] = useState(false); //確認モーダル
 
@@ -35,8 +35,7 @@ const RequestModal: React.FC<RequestModalProps> = ({ onClose,onSubmit }) => {
           className="w-1/3 p-2 border border-gray-300 rounded my-3"
           required
           placeholder="分団を入力"
-          onChange={(e)=>setGroup(e.target.value)}
-        />
+          onChange={(e) => setGroup(parseInt(e.target.value) || undefined)}        />
         <textarea
           className="w-full p-2 border border-gray-300 rounded h-32 resize-none"
           required

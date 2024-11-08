@@ -14,6 +14,7 @@ export async function POST(request: Request) {
         }
     } catch (error) {
         // エラーハンドリング
+        console.error(error);
         return NextResponse.json({ message: 'サーバーエラー' }, { status: 500 });
     }
 }

@@ -138,7 +138,7 @@ const Main: React.FC = () => {
         )}
 
         <form className="w-full p-8 bg-cyan-100 shadow-lg rounded mx-5">
-          <BulletinBoard />
+          <BulletinBoard onClose={() => setRequestModal(false)}/>
         </form>
       </div>
 

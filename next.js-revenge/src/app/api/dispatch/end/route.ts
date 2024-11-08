@@ -1,8 +1,12 @@
 import connection from "@/lib/db";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { NextResponse } from "next/server";
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dan-key';
+
+interface DecodedId extends JwtPayload{
+    id:number;
+}
 
 export async function POST(req: Request) {
     try {
@@ -12,7 +16,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: 'トークンが見つかりません' }, { status: 401 });
         }
 
-        const decoded = jwt.verify(token, JWT_SECRET);
+        const decoded = jwt.verify(token, JWT_SECRET) as DecodedId;
         const userId = decoded.id;
 
         if (!userId) {
@@ -32,13 +36,15 @@ export async function POST(req: Request) {
             [latitude, longitude, userId] 
         );
 
-        if (updateResult.affectedRows === 0) {
+        const result = updateResult as {affectedRows:number}
+
+        if (result.affectedRows === 0) {
             return NextResponse.json({ message: '出動記録が見つかりませんでした' }, { status: 404 });
         }
 
         return NextResponse.json({ message: '出場終了' }, { status: 200 });
     } catch (error) {
         console.error('error', error);
-        return NextResponse.json({ message: 'エラーが発生しました', error: error.message }, { status: 500 });
+        return NextResponse.json({ message: 'エラーが発生しました' }, { status: 500 });
     }
 }

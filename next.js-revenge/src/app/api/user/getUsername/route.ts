@@ -21,6 +21,7 @@ try{
     //成功時にユーザー名と幹部情報を返す
     return NextResponse.json({username,executive});
 }catch(error){
+    console.error(error);
     return NextResponse.json({message:'無効なトークン'},{status:403});
 
 }};

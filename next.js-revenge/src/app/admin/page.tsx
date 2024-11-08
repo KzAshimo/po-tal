@@ -38,8 +38,8 @@ const Admin = () => {
       duration: number;
     }>;
   }>({ requests: [], users: [], location: [] });
-  const [error, setError] = useState(null);
-  const [selectedContent, setSelectedContent] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [selectedContent, setSelectedContent] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState(""); // 検索クエリ状態追加
   const [isShowingCompleted, setIsShowingCompleted] = useState(false);
 
@@ -53,7 +53,7 @@ const Admin = () => {
       if (response.ok) router.replace("/");
       else console.error("ログアウトエラー");
     } catch (error) {
-      console.error("ログアウトエラー");
+      setError((error as Error).message);
     }
   };
   //--以下団情報--------------------------------------------------
@@ -67,7 +67,7 @@ const Admin = () => {
         setData((prevData) => ({ ...prevData, users: result.users }));
       } catch (error) {
         console.error(error);
-        setError(error.message);
+        setError((error as Error).message);
       }
     };
     fetchUsersData();
@@ -126,8 +126,7 @@ const Admin = () => {
         users: prevData.users.filter((user) => user.id !== id),
       }));
     } catch (error) {
-      console.error("削除エラー:", error);
-      alert("削除中にエラーが発生しました");
+      setError((error as Error).message);
     }
   };
   //--以上団員情報-----------------------------------------
@@ -142,9 +141,7 @@ const Admin = () => {
         const result = await response.json();
         setData((prevData) => ({ ...prevData, location: result.location }));
       } catch (error) {
-        console.error(error);
-        setError(error.message);
-      }
+        setError((error as Error).message);      }
     };
     fetchLocationData();
   }, []);
@@ -161,8 +158,7 @@ const Admin = () => {
         setData((prevData) => ({ ...prevData, requests: result.requests }));
       } catch (error) {
         console.error(error);
-        setError(error.message);
-      }
+        setError((error as Error).message);      }
     };
     fetchRequestsData();
   }, []);
@@ -227,7 +223,7 @@ const Admin = () => {
   };
   //--以上要望確認----------------------------------------------------
 
-  const handleSearch = (e) => setSearchQuery(e.target.value.toLowerCase());
+  const handleSearch = (e:React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value.toLowerCase());
 
   //--検索-------------------------------------------------------------
   //ユーザー情報

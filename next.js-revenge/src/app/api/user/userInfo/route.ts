@@ -1,5 +1,13 @@
 import connection from "@/lib/db";
 import { NextResponse } from "next/server";
+import { RowDataPacket } from 'mysql2';
+
+interface User extends RowDataPacket {
+  id: number;
+  username: string;
+  executive: number;
+  group: string;
+}
 
 export async function GET(){
   try{
@@ -9,7 +17,7 @@ export async function GET(){
       `
     );
 
-    return NextResponse.json({users:users});
+    return NextResponse.json({users});
   }catch(error){
     console.error(error);
     return NextResponse.json({message:"データベースエラー"},{status:500})
@@ -31,7 +39,7 @@ export async function POST(request:Request){
       [newExecutiveStatus,id]
     );
 
-    const [updatedUser] = await connection.query(
+    const [updatedUser] = await connection.query<User[]>(
       `SELECT * FROM users WHERE id = ?`,
       [id]
     );

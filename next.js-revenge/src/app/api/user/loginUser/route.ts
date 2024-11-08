@@ -13,8 +13,10 @@ export async function POST(req:Request){
             [username,password]
         );
 
-        if(rows.length > 0){
-            const user = rows[0];
+        const userRows = rows as { id: number; username: string; executive: string }[];
+
+        if(userRows.length > 0){
+            const user = userRows[0];
             //jwtトークンを生成
             const token = jwt.sign({
                 id:user.id,
@@ -33,6 +35,7 @@ export async function POST(req:Request){
             );
         }
     }catch (error){
+        console.error(error)
         return NextResponse.json(
             {message:'サーバーエラー'},
             {status:500}

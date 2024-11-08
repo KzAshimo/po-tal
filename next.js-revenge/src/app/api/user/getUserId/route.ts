@@ -19,6 +19,7 @@ try{
     //成功時にユーザー名を返す
     return NextResponse.json({userId});
 }catch(error){
+    console.error(error);
     return NextResponse.json({message:'無効なトークン'},{status:403});
 
 }};

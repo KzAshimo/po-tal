@@ -64,8 +64,8 @@ const LoginPage = () => {
       } else {
         setError(data.message || "ログイン失敗");
       }
-    } catch (err) {
-      setError("error");
+    } catch (error) {
+      console.error(error);
     }
   };
   //管理者ログイン
@@ -88,9 +88,9 @@ const LoginPage = () => {
       } else {
         setError(data.message || "アドミンログインエラー");
       }
-    } catch (err) {
-      setError("エラー");
-    }
+    } catch (error) {
+      console.error(error);
+        }
   };
 
   return (
