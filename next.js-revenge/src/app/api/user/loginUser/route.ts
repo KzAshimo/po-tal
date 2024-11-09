@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import connection from "@/lib/db";
-import  jwt  from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
 
-const SECRET_KEY = 'dan-key';
+const SECRET_KEY = process.env.SECRET_KEY as string;
+
 
 export async function POST(req:Request){
     const{username,password} = await req.json();

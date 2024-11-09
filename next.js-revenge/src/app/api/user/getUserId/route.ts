@@ -1,7 +1,11 @@
-import jwt from 'jsonwebtoken';
+import jwt,{JwtPayload} from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
 
-const SECRET_KEY = 'dan-key';
+const SECRET_KEY = process.env.SECRET_KEY as string;
+
+interface MyJwtPayload extends JwtPayload{
+    userId:number;
+}
 
 export async function GET(req:Request){
     const authHeader = req.headers.get('Authorization');
@@ -12,7 +16,7 @@ if(!token){
 }
 try{
     //トークンを検証
-    const decoded = jwt.verify(token,SECRET_KEY) as {userId:number};
+    const decoded = jwt.verify(token,SECRET_KEY) as MyJwtPayload | JwtPayload;
 
     const userId = decoded.userId;
 

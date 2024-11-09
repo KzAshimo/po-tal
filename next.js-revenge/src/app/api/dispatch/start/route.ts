@@ -3,7 +3,8 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { ResultSetHeader } from "mysql2";
 import { NextResponse } from "next/server";
 
-const JWT_SECRET = process.env.JWT_SECRET || "dan-key";
+const SECRET_KEY = process.env.SECRET_KEY as string;
+const JWT_SECRET = process.env.JWT_SECRET || SECRET_KEY;
 
 export async function POST(req: Request) {
   try {
