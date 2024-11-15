@@ -5,7 +5,7 @@ const SECRET_KEY = process.env.SECRET_KEY as string;
 
 interface MyJwtPayload extends JwtPayload {
   username: string;
-  executive: number;
+  executive: boolean;
 }
 
 export async function GET(req: Request) {

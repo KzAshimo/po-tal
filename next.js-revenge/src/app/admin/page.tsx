@@ -10,7 +10,7 @@ import BulletinBoard from "../components/bulletinBoard";
 type UserType = {
   id: number;
   username: string;
-  group: string;
+  group_name: string;
   executive: number;
 };
 
@@ -19,16 +19,20 @@ const Admin = () => {
     requests: Array<{
       request_id: number;
       created_at: string;
-      username: string;
-      group: string;
       content: string;
       status: number;
+      users: {
+        username: string;
+        group_name: string;
+      };
     }>;
     users: UserType[];
     location: Array<{
-      id: number;
+      location_id: number;
+      users:{
       username: string;
-      group: string;
+      group_name: string;
+      };
       start_time: string;
       end_time: string;
       start_latitude: number;
@@ -38,6 +42,7 @@ const Admin = () => {
       duration: number;
     }>;
   }>({ requests: [], users: [], location: [] });
+  
   const [error, setError] = useState<string | null>(null);
   const [selectedContent, setSelectedContent] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState(""); // 検索クエリ状態追加
@@ -226,17 +231,17 @@ const Admin = () => {
   const handleSearch = (e:React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value.toLowerCase());
 
   //--検索-------------------------------------------------------------
-  //ユーザー情報
+  //ユーザー情報-----
   const filteredUsers = data.users.filter(
     (user) =>
       user.username.toLowerCase().includes(searchQuery) ||
-      (user.group && user.group.toString().toLowerCase().includes(searchQuery))
+      (user.group_name && user.group_name.toString().toLowerCase().includes(searchQuery))
   );
-  //出場情報
+  //出場情報-----
   const filteredLocations = data.location.filter((log) => {
     const matchesSearchQuery =
-      log.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (log.group && log.group.toString().toLowerCase().includes(searchQuery));
+      log.users.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (log.users.group_name && log.users.group_name.toString().toLowerCase().includes(searchQuery));
 
     const logStartDate = new Date(log.start_time);
     const logEndDate = new Date(log.end_time);
@@ -253,12 +258,12 @@ const Admin = () => {
     setStartDate("");
     setEndDate("");
   };
-  //要望情報
+  //要望情報-----
   const filteredRequests = data.requests.filter((request) => {
     const matchesSearchQuery =
-      request.username.toLowerCase().includes(searchQuery) ||
-      (request.group &&
-        request.group.toString().toLowerCase().includes(searchQuery)) ||
+      request.users.username.toLowerCase().includes(searchQuery) ||
+      (request.users.group_name &&
+        request.users.group_name.toString().toLowerCase().includes(searchQuery)) ||
       request.content.toLowerCase().includes(searchQuery); // 要望内容を検索
 
     // 日付フィルタリング（開始日以降）
@@ -362,7 +367,7 @@ const Admin = () => {
               <ul>
                 {filteredUsers.map((user) => (
                   <li key={user.id} className="p-2 bg-gray-200 mb-2 rounded">
-                    {user.group} 分団: {user.username}
+                    {user.group_name} 分団: {user.username}
                     <button
                       className={`ml-4 px-2 py-1 rounded text-white ${
                         user.executive === 1
@@ -437,8 +442,8 @@ const Admin = () => {
                   const minutes = Math.floor((log.duration % 3600) / 60); // 1分 = 60秒
 
                   return (
-                    <li key={log.id} className="p-2 bg-gray-200 mb-2 rounded">
-                      出場者: {log.username} 【{log.group}分団】活動時間:{" "}
+                    <li key={log.location_id} className="p-2 bg-gray-200 mb-2 rounded">
+                      出場者: {log.users.username} 【{log.users.group_name}分団】活動時間:{" "}
                       {hours}時間 {minutes}分
                       <br />
                       開始報告日時:
@@ -551,9 +556,9 @@ const Admin = () => {
                             }
                           )}
                           <br />
-                          要望者: {request.username}
+                          要望者: {request.users.username}
                           <br />
-                          {request.group} 分団
+                          {request.users.group_name} 分団
                           <br />
                           要望: {request.content}
                           <br />
@@ -599,9 +604,9 @@ const Admin = () => {
                             }
                           )}
                           <br />
-                          要望者: {request.username}
+                          要望者: {request.users.username}
                           <br />
-                          {request.group} 分団
+                          {request.users.group_name} 分団
                           <br />
                           要望: {request.content}
                           <br />

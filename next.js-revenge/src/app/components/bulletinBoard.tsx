@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 interface Post {
-  id: number;
+  board_id: number;
   title: string;
   content: string;
   created_at: string;
@@ -54,7 +54,7 @@ const BulletinBoard = ({ isAdmin = false, onClose }: BulletinBoardProps) => {
       if (!response.ok) {
         throw new Error("削除に失敗しました");
       }
-      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
+      setPosts((prevPosts) => prevPosts.filter((post) => post.board_id !== postId));
     } catch (err) {
       setError((err as Error).message);
     }
@@ -116,11 +116,11 @@ const BulletinBoard = ({ isAdmin = false, onClose }: BulletinBoardProps) => {
       ) : (
         <ul>
           {posts.map((post) => (
-            <li key={post.id} className="bg-gray-100 p-4 mb-2 rounded shadow">
+            <li key={post.board_id} className="bg-gray-100 p-4 mb-2 rounded shadow">
               <small>{new Date(post.created_at).toLocaleString("ja-JP")}</small>
               {isAdmin && (
                 <button
-                  onClick={() => handleDelete(post.id)}
+                  onClick={() => handleDelete(post.board_id)}
                   className="mt-2 px-4 py-1 text-white rounded bg-black hover:bg-red-700 mx-3"
                 >
                   削除

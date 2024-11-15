@@ -25,7 +25,7 @@ CREATE TABLE requests (
 );
 
 
-CREATE TABLE bulletin_board_posts (
+CREATE TABLE board (
   id INT PRIMARY KEY AUTO_INCREMENT,
   admin_id INT,
   title VARCHAR(255),

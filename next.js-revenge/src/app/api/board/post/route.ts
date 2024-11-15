@@ -1,4 +1,5 @@
-import connection from "@/lib/db";
+// src/app/api/dispatch/admin.ts
+import { supabase } from "@/lib/db";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -8,29 +9,32 @@ export async function GET(req: Request) {
 
   try {
     // ベースのクエリ
-    let query = "SELECT * FROM bulletin_board_posts WHERE 1=1";
-    const params: (string | Date)[] = [];
+    let query = supabase.from('board').select('*');
 
     // searchTermが指定されている場合の処理
     if (searchTerm) {
-      query += " AND (title LIKE ? OR content LIKE ?)";
-      const keyword = `%${searchTerm}%`;
-      params.push(keyword, keyword);
+      query = query.ilike('title', `%${searchTerm}%`).or(`ilike(content, %${searchTerm}%)`);
     }
 
     // startDateが指定されている場合の処理
     if (startDate) {
-      query += " AND DATE(created_at) = ?";
-      params.push(startDate);
+      query = query.eq('created_at', startDate);
     }
 
     // 最新順で並び替える
-    query += " ORDER BY created_at DESC";
+    query = query.order('created_at', { ascending: false });
 
-    const [posts] = await connection.query(query, params);
+    // データ取得
+    const { data: posts, error } = await query;
+
+    if (error) {
+      console.error('データベースエラー:', error.message);
+      return NextResponse.json({ message: "データベースエラー" }, { status: 500 });
+    }
+
     return NextResponse.json({ posts });
   } catch (error) {
-    console.error("データベースエラー:", error);
+    console.error("予期しないエラー:", error);
     return NextResponse.json({ message: "データベースエラー" }, { status: 500 });
   }
 }

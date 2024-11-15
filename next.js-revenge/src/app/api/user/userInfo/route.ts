@@ -1,26 +1,22 @@
-import connection from "@/lib/db";
+import { supabase } from "@/lib/db"; // Supabaseクライアントをインポート
 import { NextResponse } from "next/server";
-import { RowDataPacket } from 'mysql2';
 
-interface User extends RowDataPacket {
-  id: number;
-  username: string;
-  executive: number;
-  group: string;
-}
+export async function GET() {
+  try {
+    // Supabaseでユーザー情報を取得
+    const { data: users, error } = await supabase
+      .from("users")
+      .select("*")
+      .order("group_name", { ascending: true });
 
-export async function GET(){
-  try{
-    const [users] = await connection.execute(`
-      SELECT * FROM users
-      ORDER BY \`group\` ASC
-      `
-    );
+    if (error) {
+      throw error;
+    }
 
-    return NextResponse.json({users});
-  }catch(error){
+    return NextResponse.json({ users });
+  } catch (error) {
     console.error(error);
-    return NextResponse.json({message:"データベースエラー"},{status:500})
+    return NextResponse.json({ message: "データベースエラー" }, { status: 500 });
   }
 }
 
@@ -29,26 +25,25 @@ interface ToggleExecutiveRequest {
   executive: number;
 }
 
-export async function POST(request:Request){
-  try{
-    const {id,executive}:ToggleExecutiveRequest = await request.json();
+export async function POST(request: Request) {
+  try {
+    const { id, executive }: ToggleExecutiveRequest = await request.json();
     const newExecutiveStatus = executive === 1 ? 0 : 1;
 
-    await connection.query(
-      `UPDATE users SET executive = ? WHERE id = ?`,
-      [newExecutiveStatus,id]
-    );
+    // Supabaseでユーザーのexecutiveステータスを更新
+    const { data, error } = await supabase
+      .from("users")
+      .update({ executive: newExecutiveStatus })
+      .eq("id", id)
+      .single(); // 単一のユーザーのみ更新
 
-    const [updatedUser] = await connection.query<User[]>(
-      `SELECT * FROM users WHERE id = ?`,
-      [id]
-    );
+    if (error) {
+      throw error;
+    }
 
-    return NextResponse.json(updatedUser[0]);
-  }catch(error){
+    return NextResponse.json(data);
+  } catch (error) {
     console.error(error);
-    return NextResponse.json(
-      { message: "データベースエラー" },
-      { status: 500 }    )
+    return NextResponse.json({ message: "データベースエラー" }, { status: 500 });
   }
 }

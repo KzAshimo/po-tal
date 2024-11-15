@@ -1,6 +1,5 @@
-import connection from "@/lib/db";
+import { supabase } from "@/lib/db";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { ResultSetHeader } from "mysql2";
 import { NextResponse } from "next/server";
 
 const SECRET_KEY = process.env.SECRET_KEY as string;
@@ -27,25 +26,34 @@ export async function POST(req: Request) {
       );
     }
 
-    // 正しいプロパティ名に修正
     const { latitude, longitude } = await req.json();
 
-    // データベースへの挿入
-    const [result] = await connection.execute(
-      `INSERT INTO location_logs (user_id, start_latitude, start_longitude, start_time) VALUES (?, ?, ?, NOW())`,
-      [userId, latitude, longitude] // 修正されたプロパティ名を使用
-    );
+    // Supabaseを使用してデータベースに挿入
+    const { data, error } = await supabase
+      .from("locations") // テーブル名を `locations` に変更
+      .insert({
+        user_id: userId,
+        start_latitude: latitude,
+        start_longitude: longitude,
+        start_time: new Date().toISOString(), // `NOW()` に相当する日時をセット
+      });
 
-    const insertId = (result as ResultSetHeader).insertId;
+    if (error) {
+      console.error("Supabaseエラー", error);
+      return NextResponse.json(
+        { message: "データ挿入エラー", error: error.message },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(
-      { message: "出場開始", id: insertId },
+      { message: "出場開始", id: data?.[0]?.id },
       { status: 200 }
     );
   } catch (error) {
-    console.error("error", error);
+    console.error("エラー", error);
     return NextResponse.json(
-      { message: "エラー", error},
+      { message: "エラーが発生しました", error },
       { status: 500 }
     );
   }

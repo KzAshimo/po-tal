@@ -1,21 +1,25 @@
 // src/app/api/dispatch/admin.ts
-import connection from "@/lib/db";
-import { NextResponse } from "next/server";
+import { supabase } from "@/lib/db"; 
+import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const [location] = await connection.query(`
-      SELECT location_logs.*, users.username,users.group
-      FROM location_logs
-      JOIN users ON location_logs.user_id = users.id
-      ORDER BY start_time DESC
-    `);
+    // locationsテーブルとusersテーブルのリレーションを使用してデータを取得
+    const { data, error } = await supabase
+      .from('locations')
+      .select(`
+        *,
+        users:users(username, group_name)  // usersテーブルのusernameとgroup_nameを取得
+      `)  
+      .order('start_time', { ascending: false });
 
-    return NextResponse.json({ location });
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return NextResponse.json({ location: data });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ message: "データベースエラー" }, { status: 500 });
+    return NextResponse.json({ message: 'データベースエラー' }, { status: 500 });
   }
 }
-
-

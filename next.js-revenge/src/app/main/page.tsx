@@ -28,7 +28,7 @@ const Main: React.FC = () => {
       const data = await res.json();
       if (res.ok) {
         setUsername(data.username);
-        setIsExecutive(data.executive === 1);
+        setIsExecutive(data.executive);
       } else {
         alert("エラー: " + data.message);
         router.push("/");
@@ -68,7 +68,7 @@ const Main: React.FC = () => {
     router.push("/");
   };
 
-  const onSubmitReq = async (group: number, content: string) => {
+  const onSubmitReq = async (group_name: number, content: string) => {
     const token = localStorage.getItem("token");
     const res = await fetch("/api/requests/main", {
       method: "POST",
@@ -76,7 +76,7 @@ const Main: React.FC = () => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ group, content }),
+      body: JSON.stringify({ group_name, content }),
     });
 
     if (res.ok) {

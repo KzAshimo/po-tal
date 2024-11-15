@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import connection from "@/lib/db";
+import { supabase } from "@/lib/db"; // Supabaseクライアントをインポート
 
 const SECRET_KEY = process.env.SECRET_KEY as string;
 // JWTのシークレットキー
@@ -14,7 +14,7 @@ interface DecodedToken {
 export async function POST(request: NextRequest) {
   try {
     // リクエストのJSONボディを取得
-    const { group, content } = await request.json();
+    const { group_name, content } = await request.json();
 
     // リクエストヘッダーからトークンを取得
     const authHeader = request.headers.get("authorization");
@@ -35,29 +35,30 @@ export async function POST(request: NextRequest) {
 
     const userId = decodedToken.id;
 
-    //ユーザーが幹部か確認
-    const [result] = await connection.query("SELECT executive FROM users WHERE id = ?",[userId]);
-
-    const executiveResult = result as { executive: number }[];
-    const isExecutive = executiveResult[0]?.executive === 1;
-    if(!isExecutive){
-      return NextResponse.json({message:"幹部のみの機能です"},{status:403});
-    }
-
     // 必須フィールドのチェック
-    if (!group || !content) {
-      return NextResponse.json({ message: "グループと内容は必須です" }, { status: 400 });
+    if (!group_name || !content) {
+      return NextResponse.json({ message: "グループ名と内容は必須です" }, { status: 400 });
     }
 
-    // データベースへの挿入クエリ
-    const query = "INSERT INTO requests (user_id, `group`, content, status) VALUES (?, ?, ?, '未対応')";
-    const values = [userId, group, content];
+    // データベースへの挿入
+    const { error: insertError } = await supabase
+      .from('requests')
+      .insert([
+        {
+          user_id: userId,
+          group_name: group_name,
+          content: content,
+        },
+      ]);
 
-    await connection.query(query, values);
+    if (insertError) {
+      console.error("データベースエラー:", insertError);
+      return NextResponse.json({ message: "データベースエラー" }, { status: 500 });
+    }
 
     return NextResponse.json({ message: "データが保存されました" });
   } catch (error) {
-    console.error("データベースエラー:", error);
-    return NextResponse.json({ message: "データベースエラー" }, { status: 500 });
+    console.error("サーバーエラー:", error);
+    return NextResponse.json({ message: "サーバーエラー" }, { status: 500 });
   }
 }
