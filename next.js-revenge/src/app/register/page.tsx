@@ -6,14 +6,14 @@ import React, { useState } from 'react';
 const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [group, setGroup] = useState('');
+  const [groupname, setGroupname] = useState(''); // group から group_id に変更
   const [message, setMessage] = useState('');
-  const [showCompleteModal,setShowCompleteModal] = useState(false); //完了モーダル
-  const [showConfirmModal,setShowConfirmModal] = useState(false); //確認モーダル
-  const [passView,setPassView] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false); //完了モーダル
+  const [showConfirmModal, setShowConfirmModal] = useState(false); //確認モーダル
+  const [passView, setPassView] = useState(false);
   const router = useRouter();
 
-  const handleConfirm = (e:React.FormEvent) =>{ //確認モーダル
+  const handleConfirm = (e: React.FormEvent) => { //確認モーダル
     e.preventDefault();
     setShowConfirmModal(true);
   };
@@ -29,7 +29,7 @@ const Register = () => {
       body: JSON.stringify({
         username,
         password,
-        group,
+        group_name:groupname,
       }),
     });
 
@@ -39,7 +39,7 @@ const Register = () => {
       setShowCompleteModal(true); //完了モーダル　開
       setUsername('');
       setPassword('');
-      setGroup('');
+      setGroupname(''); // group から group_id に変更
     } else {
       setMessage(`Error: ${data.message}`);
       setShowConfirmModal(false); //確認モーダル　閉
@@ -68,28 +68,28 @@ const Register = () => {
           <label className="block text-sm font-medium mb-1">パスワード</label>
 
           <input
-            type={passView ? 'text':'password'}
+            type={passView ? 'text' : 'password'}
             className="w-full p-2 border border-gray-300 rounded"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-                    <button
+          <button
             type="button"
             onClick={() => setPassView(!passView)} // ボタンをクリックすると表示状態を切り替え
             className="bg-slate-100 text-black rounded text-sm p-1"
           >
             {passView ? "表示" : "非表示"} {/* 表示状態によってアイコンを切り替え */}
           </button>
-
         </div>
+        
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">グループ名</label>
+          <label className="block text-sm font-medium mb-1">分団名</label>
           <input
             type="number"
             className="w-full p-2 border border-gray-300 rounded"
-            value={group}
-            onChange={(e) => setGroup(e.target.value)}
+            value={groupname}
+            onChange={(e) => setGroupname(e.target.value)} // group から group_id に変更
             required
           />
         </div>
@@ -126,14 +126,14 @@ const Register = () => {
         </div>
       )}
 
-       {/* 確認モーダル */}
-       {showConfirmModal && (
+      {/* 確認モーダル */}
+      {showConfirmModal && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded shadow-lg text-center">
             <h2 className="text-2xl font-bold mb-4">確認</h2>
             <p>ユーザー名: {username}</p>
             <p>パスワード: {password}</p>
-            <p>グループ名: {group}</p>
+            <p>グループID: {groupname}</p> {/* group から group_id に変更 */}
             <button
               className="bg-cyan-900 text-white py-2 px-4 rounded mt-4 hover:bg-lime-500"
               onClick={handleRegister}
@@ -150,7 +150,8 @@ const Register = () => {
           </div>
         </div>
       )}
-
     </div>
-  );}
+  );
+}
+
 export default Register;

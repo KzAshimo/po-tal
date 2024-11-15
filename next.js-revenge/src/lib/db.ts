@@ -1,10 +1,11 @@
-import mysql from 'mysql2/promise'
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
+// クライアント用の公開URLと公開APIキーを取得
+const supabaseUrl: string = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+const supabaseKey: string = process.env.NEXT_PUBLIC_SUPABASE_KEY as string;
 
-const connection = await mysql.createConnection({
-    host:'localhost',
-    user:'root',
-    password:'',
-    database:'db_login'
-});
-export default connection;
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Supabase URL or Key is missing');
+}
+
+export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseKey);
