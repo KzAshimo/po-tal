@@ -85,7 +85,7 @@ const BulletinBoard = ({ isAdmin = false, onClose }: BulletinBoardProps) => {
 
       {/* 日付フィルター */}
       <div className="my-4">
-        <label className="mr-2">日付でフィルター:</label>
+        <label className="mr-2">日付で検索:</label>
         <input
           type="date"
           value={searchDate}
