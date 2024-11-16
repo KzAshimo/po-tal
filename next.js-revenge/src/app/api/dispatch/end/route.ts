@@ -59,7 +59,6 @@ export async function POST(req: Request) {
                 message: error.message,
                 hint: error.hint,
                 details: error.details,
-                status: error.status
             });
             return NextResponse.json(
                 { message: "データ更新エラー", error: error.message },
@@ -68,7 +67,7 @@ export async function POST(req: Request) {
         }
 
 
-        console.log("更新成功:", data);
+        console.log("更新成功");
         return NextResponse.json({ message: "出場終了", data }, { status: 200 });
     } catch (error) {
         console.error("エラー発生:", error);

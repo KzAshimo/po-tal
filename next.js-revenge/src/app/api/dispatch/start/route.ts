@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 const SECRET_KEY = process.env.SECRET_KEY as string;
 const JWT_SECRET = process.env.JWT_SECRET || SECRET_KEY;
 
+
 export async function POST(req: Request) {
   try {
     const token = req.headers.get("Authorization")?.split(" ")[1];
@@ -28,15 +29,15 @@ export async function POST(req: Request) {
 
     const { latitude, longitude } = await req.json();
 
-    // Supabaseを使用してデータベースに挿入
     const { data, error } = await supabase
-      .from("locations") // テーブル名を `locations` に変更
+      .from("locations") 
       .insert({
         user_id: userId,
         start_latitude: latitude,
         start_longitude: longitude,
-        start_time: new Date().toISOString(), // `NOW()` に相当する日時をセット
-      });
+        start_time: new Date().toISOString(),
+      })
+      .select(); 
 
     if (error) {
       console.error("Supabaseエラー", error);
