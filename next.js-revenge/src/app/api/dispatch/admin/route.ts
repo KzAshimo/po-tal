@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    // locationsテーブルとusersテーブルのリレーションを使用してデータを取得
     const { data, error } = await supabase
       .from('locations')
       .select(`

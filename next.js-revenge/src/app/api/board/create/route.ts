@@ -11,13 +11,11 @@ export async function POST(req: Request) {
         { title, content }
       ])
 
-    // エラーチェック
     if (error) {
       console.error('データベースエラー:', error.message);
       return NextResponse.json({ message: "データベースエラー" }, { status: 500 });
     }
 
-    // 成功レスポンス: 挿入されたデータを返す
     return NextResponse.json({ message: "投稿が作成されました", data });
   } catch (error) {
     console.error('予期しないエラー:', error);

@@ -1,11 +1,10 @@
-import { supabase } from "@/lib/db"; // Supabaseクライアントをインポート
+import { supabase } from "@/lib/db"; 
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
     const { id, executive } = await req.json();
 
-    // Supabaseでユーザーのexecutiveを更新
     const { error } = await supabase
       .from("users")
       .update({ executive })

@@ -7,15 +7,12 @@ export async function GET(req: Request) {
   const startDate = searchParams.get("startDate");
 
   try {
-    // ベースのクエリ
     let query = supabase.from('board').select('*');
 
-    // searchTermが指定されている場合の処理
     if (searchTerm) {
       query = query.ilike('title', `%${searchTerm}%`).or(`ilike(content, %${searchTerm}%)`);
     }
 
-    // startDateが指定されている場合の処理
     if (startDate) {
       const parsedStartDate = new Date(startDate);
       if (!isNaN(parsedStartDate.getTime())) {
@@ -25,10 +22,8 @@ export async function GET(req: Request) {
       }
     }
 
-    // 最新順で並び替える
     query = query.order('created_at', { ascending: false });
 
-    // データ取得
     const { data: posts, error } = await query;
 
     if (error) {

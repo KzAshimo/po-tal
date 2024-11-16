@@ -7,25 +7,20 @@ export async function GET(req: Request) {
   const startDate = searchParams.get("startDate");
 
   try {
-    // ベースクエリ
     let query = supabase.from("board").select("*");
 
-    // キーワード検索（titleまたはcontent）
     if (searchTerm) {
       query = query.or(`title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`);
     }
 
-    // 日付フィルタ
     if (startDate) {
       const startOfDay = `${startDate}T00:00:00`;
       const endOfDay = `${startDate}T23:59:59`;
       query = query.gte("created_at", startOfDay).lte("created_at", endOfDay);
     }
 
-    // 最新順に並び替え
     query = query.order("created_at", { ascending: false });
 
-    // データ取得
     const { data: posts, error } = await query;
 
     if (error) {
