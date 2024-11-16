@@ -7,7 +7,6 @@ const SECRET_KEY = process.env.SECRET_KEY as string;
 export async function POST(req: Request) {
   const { username, password } = await req.json();
 
-  // データベースからユーザーを取得
   try {
     const { data: userRows, error } = await supabase
       .from("users")
@@ -25,7 +24,6 @@ export async function POST(req: Request) {
 
     if (userRows && userRows.length > 0) {
       const user = userRows[0];
-      // jwtトークンを生成
       const token = jwt.sign(
         {
           id: user.id,
@@ -35,7 +33,6 @@ export async function POST(req: Request) {
         SECRET_KEY,
         { expiresIn: "1h" }
       );
-      // トークンを返す
       return NextResponse.json({ message: "login 成功", token });
     } else {
       return NextResponse.json(

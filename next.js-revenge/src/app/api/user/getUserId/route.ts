@@ -15,12 +15,10 @@ if(!token){
     return NextResponse.json({message:'トークンが提供されてない'},{status:403});
 }
 try{
-    //トークンを検証
     const decoded = jwt.verify(token,SECRET_KEY) as MyJwtPayload | JwtPayload;
 
     const userId = decoded.userId;
 
-    //成功時にユーザー名を返す
     return NextResponse.json({userId});
 }catch(error){
     console.error(error);

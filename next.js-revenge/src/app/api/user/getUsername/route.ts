@@ -19,12 +19,10 @@ export async function GET(req: Request) {
     );
   }
   try {
-    //トークンを検証
     const decoded = jwt.verify(token, SECRET_KEY) as MyJwtPayload | JwtPayload;
     const username = decoded.username;
     const executive = decoded.executive;
 
-    //成功時にユーザー名と幹部情報を返す
     return NextResponse.json({ username, executive });
   } catch (error) {
     console.error(error);
