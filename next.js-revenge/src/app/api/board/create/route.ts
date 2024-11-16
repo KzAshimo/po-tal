@@ -5,7 +5,6 @@ export async function POST(req: Request) {
   const { title, content } = await req.json();
 
   try {
-    // Supabaseに投稿を挿入
     const { data, error } = await supabase
       .from('board')
       .insert([

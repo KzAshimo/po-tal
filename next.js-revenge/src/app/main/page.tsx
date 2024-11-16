@@ -80,7 +80,8 @@ const Main: React.FC = () => {
     });
 
     if (res.ok) {
-      alert("送信完了");
+      console.log("要望送信");
+      
     } else {
       alert("送信失敗");
     }

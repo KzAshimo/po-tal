@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import "../globals.css";
 import { useRouter } from "next/navigation";
 
-// 新しいコンポーネントをインポート
 import AdminPostForm from "../components/adminPostForm";
 import BulletinBoard from "../components/bulletinBoard";
 
@@ -370,13 +369,13 @@ const Admin = () => {
                     {user.group_name} 分団: {user.username}
                     <button
                       className={`ml-4 px-2 py-1 rounded text-white ${
-                        user.executive === 1
+                        user.executive
                           ? "bg-red-500 hover:bg-red-700"
                           : "bg-blue-500 hover:bg-blue-700"
                       }`}
                       onClick={() => toggleExecutive(user.id, user.executive)}
                     >
-                      {user.executive === 1 ? "幹部" : "団員"}
+                      {user.executive ? "幹部" : "団員"}
                     </button>
                     <button
                       onClick={() => deleteUser(user.id)}

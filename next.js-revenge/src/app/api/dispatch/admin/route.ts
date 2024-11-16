@@ -1,4 +1,3 @@
-// src/app/api/dispatch/admin.ts
 import { supabase } from "@/lib/db"; 
 import { NextResponse } from 'next/server';
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { supabase } from "@/lib/db"; // Supabaseクライアントをインポート
+import { supabase } from "@/lib/db"; 
 
 const SECRET_KEY = process.env.SECRET_KEY as string;
 // JWTのシークレットキー

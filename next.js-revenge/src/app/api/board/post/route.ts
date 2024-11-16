@@ -1,4 +1,3 @@
-// src/app/api/dispatch/admin.ts
 import { supabase } from "@/lib/db";
 import { NextResponse } from "next/server";
 
@@ -8,33 +7,35 @@ export async function GET(req: Request) {
   const startDate = searchParams.get("startDate");
 
   try {
-    // ベースのクエリ
-    let query = supabase.from('board').select('*');
+    // ベースクエリ
+    let query = supabase.from("board").select("*");
 
-    // searchTermが指定されている場合の処理
+    // キーワード検索（titleまたはcontent）
     if (searchTerm) {
-      query = query.ilike('title', `%${searchTerm}%`).or(`ilike(content, %${searchTerm}%)`);
+      query = query.or(`title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`);
     }
 
-    // startDateが指定されている場合の処理
+    // 日付フィルタ
     if (startDate) {
-      query = query.eq('created_at', startDate);
+      const startOfDay = `${startDate}T00:00:00`;
+      const endOfDay = `${startDate}T23:59:59`;
+      query = query.gte("created_at", startOfDay).lte("created_at", endOfDay);
     }
 
-    // 最新順で並び替える
-    query = query.order('created_at', { ascending: false });
+    // 最新順に並び替え
+    query = query.order("created_at", { ascending: false });
 
     // データ取得
     const { data: posts, error } = await query;
 
     if (error) {
-      console.error('データベースエラー:', error.message);
+      console.error("データベースエラー:", error.message);
       return NextResponse.json({ message: "データベースエラー" }, { status: 500 });
     }
 
     return NextResponse.json({ posts });
   } catch (error) {
     console.error("予期しないエラー:", error);
-    return NextResponse.json({ message: "データベースエラー" }, { status: 500 });
+    return NextResponse.json({ message: "サーバーエラー" }, { status: 500 });
   }
 }

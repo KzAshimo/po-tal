@@ -15,20 +15,20 @@ interface BulletinBoardProps {
 const BulletinBoard = ({ isAdmin = false, onClose }: BulletinBoardProps) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [searchDate, setSearchDate] = useState<string>("");
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchDate, setSearchDate] = useState<string>(""); // 日付の検索
+  const [searchQuery, setSearchQuery] = useState<string>(""); // キーワードの検索
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const url = new URL("/api/board/post", window.location.origin);
-        
+
         // URLに検索条件を追加
         if (searchDate) {
           url.searchParams.append("startDate", searchDate);
         }
         if (searchQuery) {
-          url.searchParams.append("searchTerm", searchQuery); // queryで一括検索
+          url.searchParams.append("searchTerm", searchQuery);
         }
 
         const response = await fetch(url.toString());
@@ -41,8 +41,9 @@ const BulletinBoard = ({ isAdmin = false, onClose }: BulletinBoardProps) => {
         setError((err as Error).message);
       }
     };
+
     fetchPosts();
-  }, [searchDate, searchQuery]);
+  }, [searchDate, searchQuery]); // 検索条件が変わるたびにデータを再取得
 
   const handleDelete = async (postId: number) => {
     try {
@@ -64,7 +65,6 @@ const BulletinBoard = ({ isAdmin = false, onClose }: BulletinBoardProps) => {
   const handleResetDate = () => {
     setSearchDate("");
   };
-
 
   // キーワードの検索処理
   const handleSearchQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
