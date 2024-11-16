@@ -7,9 +7,9 @@ export async function GET() {
       .from('requests')
       .select(`
         *,
-        users!inner(id, username, group_name)  -- usersテーブルのフィールドを選択
+        users!inner(id, username, group_name)  
       `)
-      .order('created_at', { ascending: false }); // created_atで降順に並べる
+      .order('created_at', { ascending: false });
 
     if (error) {
       throw error;

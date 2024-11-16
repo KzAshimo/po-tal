@@ -176,7 +176,7 @@ const LoginPage = () => {
             <h2 className="text-2xl font-bold mb-4">管理者認証</h2>
             <form onSubmit={adminLogin}>
               <label className="block text-sm font-medium mb-1">
-                パスワード
+                パスワード(初期pass: admin )
               </label>
 
               <input

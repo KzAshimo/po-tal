@@ -120,7 +120,7 @@ const Main: React.FC = () => {
           </button>
         </form>
 
-        {isExecutive && ( // 条件付きレンダリング
+        {isExecutive && ( // 幹部登録ユーザーのみに表示
           <form className="w-1/3 h-auto p-8 bg-slate-100 shadow-lg rounded m-5">
             <h1 className="text-2xl font-bold">本部へ要望</h1>
             <p className="py-1">
