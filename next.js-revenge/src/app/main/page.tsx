@@ -80,8 +80,7 @@ const Main: React.FC = () => {
     });
 
     if (res.ok) {
-      console.log("要望送信");
-      
+      alert("送信完了");
     } else {
       alert("送信失敗");
     }
@@ -120,7 +119,7 @@ const Main: React.FC = () => {
           </button>
         </form>
 
-        {isExecutive && ( // 幹部登録ユーザーのみに表示
+        {isExecutive && (
           <form className="w-1/3 h-auto p-8 bg-slate-100 shadow-lg rounded m-5">
             <h1 className="text-2xl font-bold">本部へ要望</h1>
             <p className="py-1">

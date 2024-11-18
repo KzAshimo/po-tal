@@ -17,7 +17,6 @@ const Dispatch = () => {
     }
     
 
-    // タイマー用の useEffect
     useEffect(() => {
         const interval = setInterval(() => {
             setSeconds((prev) => prev + 1);
@@ -79,7 +78,6 @@ const Dispatch = () => {
         }
     };
 
-    // 秒を時間、分、秒に変換する関数
     const formatTime = (totalSeconds: number) => {
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);

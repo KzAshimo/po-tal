@@ -128,7 +128,7 @@ const LoginPage = () => {
           />
           <button
             type="button"
-            onClick={() => setPassView(!passView)} // ボタンをクリックすると表示状態を切り替え
+            onClick={() => setPassView(!passView)}
             className="bg-slate-100 text-black rounded text-sm p-1"
           >
             {passView ? "表示" : "非表示"}{" "}
@@ -147,7 +147,7 @@ const LoginPage = () => {
         <button
           type="button"
           className="w-full bg-cyan-600 text-white py-2 rounded mt-4 hover:bg-lime-600"
-          onClick={() => router.push("/register")} // クリック時に /register へ遷移
+          onClick={() => router.push("/register")}
         >
           新規登録
         </button>
@@ -188,7 +188,7 @@ const LoginPage = () => {
               />
                             <button
                 type="button"
-                onClick={() => setPassView(!passView)} // ボタンをクリックすると表示状態を切り替え
+                onClick={() => setPassView(!passView)}
                 className="bg-slate-100 text-black rounded text-sm p-1"
               >
                 {passView ? "表示" : "非表示"}{" "}

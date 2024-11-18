@@ -44,11 +44,11 @@ const Admin = () => {
   
   const [error, setError] = useState<string | null>(null);
   const [selectedContent, setSelectedContent] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState(""); // 検索クエリ状態追加
+  const [searchQuery, setSearchQuery] = useState("");
   const [isShowingCompleted, setIsShowingCompleted] = useState(false);
 
-  const [startDate, setStartDate] = useState(""); // 開始日
-  const [endDate, setEndDate] = useState(""); // 終了日
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -77,7 +77,7 @@ const Admin = () => {
     fetchUsersData();
   }, []);
 
-  // 幹部切り替え
+  // 幹部切り替え---
   const toggleExecutive = async (userId: number, currentExecutive: number) => {
     const newExecutive = currentExecutive === 1 ? 0 : 1;
 
@@ -90,7 +90,6 @@ const Admin = () => {
 
       const data = await res.json();
       if (res.ok) {
-        // 成功した場合、該当ユーザーのexecutiveステータスを更新
         setData((prevData) => ({
           ...prevData,
           users: prevData.users.map((user) =>
@@ -106,7 +105,7 @@ const Admin = () => {
     }
   };
 
-  //ユーザーデータ削除
+  //ユーザーデータ削除---
   const deleteUser = async (id: number) => {
     try {
       const res = await fetch("/api/admin/userData/delete", {
@@ -122,9 +121,9 @@ const Admin = () => {
       }
 
       const data = await res.json();
-      alert(data.message); // 削除完了メッセージ
+      alert(data.message);
 
-      // データ更新処理（削除したユーザーを除外）
+      // データ更新処理（削除したユーザーを除外）---
       setData((prevData) => ({
         ...prevData,
         users: prevData.users.filter((user) => user.id !== id),
@@ -167,7 +166,7 @@ const Admin = () => {
     fetchRequestsData();
   }, []);
 
-  //要望status切り替え
+  //要望status切り替え---
   const toggleStatus = async (id: number, status: number) => {
     const newStatus = status === 1 ? 0 : 1;
     try {
@@ -196,7 +195,7 @@ const Admin = () => {
     }
   };
 
-  //要望削除
+  //要望削除---
   const deleteRequests = async (id: number) => {
     try {
       const res = await fetch("/api/admin/requests/delete", {
@@ -212,7 +211,7 @@ const Admin = () => {
       }
 
       const data = await res.json();
-      alert(data.message); // 削除完了メッセージ
+      alert(data.message);
 
       setData((prevData) => ({
         ...prevData,
@@ -436,9 +435,8 @@ const Admin = () => {
 
               <ul>
                 {filteredLocations.map((log) => {
-                  // 秒数を時間と分に変換
-                  const hours = Math.floor(log.duration / 3600); // 1時間 = 3600秒
-                  const minutes = Math.floor((log.duration % 3600) / 60); // 1分 = 60秒
+                  const hours = Math.floor(log.duration / 3600);
+                  const minutes = Math.floor((log.duration % 3600) / 60);
 
                   return (
                     <li key={log.location_id} className="p-2 bg-gray-200 mb-2 rounded">

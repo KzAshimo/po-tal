@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [groupname, setGroupname] = useState(''); // group から group_id に変更
+  const [groupname, setGroupname] = useState('');
   const [message, setMessage] = useState('');
   const [showCompleteModal, setShowCompleteModal] = useState(false); //完了モーダル
   const [showConfirmModal, setShowConfirmModal] = useState(false); //確認モーダル
@@ -39,7 +39,7 @@ const Register = () => {
       setShowCompleteModal(true); //完了モーダル　開
       setUsername('');
       setPassword('');
-      setGroupname(''); // group から group_id に変更
+      setGroupname('');
     } else {
       setMessage(`Error: ${data.message}`);
       setShowConfirmModal(false); //確認モーダル　閉
@@ -76,7 +76,7 @@ const Register = () => {
           />
           <button
             type="button"
-            onClick={() => setPassView(!passView)} // ボタンをクリックすると表示状態を切り替え
+            onClick={() => setPassView(!passView)}
             className="bg-slate-100 text-black rounded text-sm p-1"
           >
             {passView ? "表示" : "非表示"} {/* 表示状態によってアイコンを切り替え */}
@@ -89,7 +89,7 @@ const Register = () => {
             type="number"
             className="w-full p-2 border border-gray-300 rounded"
             value={groupname}
-            onChange={(e) => setGroupname(e.target.value)} // group から group_id に変更
+            onChange={(e) => setGroupname(e.target.value)}
             required
           />
         </div>
@@ -118,7 +118,7 @@ const Register = () => {
             <p className="mb-6">ユーザー登録が完了しました！</p>
             <button
               className="bg-lime-600 text-white py-2 px-4 rounded hover:bg-cyan-600"
-              onClick={() => router.push('/')} // ログインページへリダイレクト
+              onClick={() => router.push('/')}
             >
               ログインへ戻る
             </button>

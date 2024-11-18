@@ -15,15 +15,14 @@ interface BulletinBoardProps {
 const BulletinBoard = ({ isAdmin = false, onClose }: BulletinBoardProps) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [searchDate, setSearchDate] = useState<string>(""); // 日付の検索
-  const [searchQuery, setSearchQuery] = useState<string>(""); // キーワードの検索
+  const [searchDate, setSearchDate] = useState<string>(""); // 日付検索
+  const [searchQuery, setSearchQuery] = useState<string>(""); // キーワード検索
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const url = new URL("/api/board/post", window.location.origin);
 
-        // URLに検索条件を追加
         if (searchDate) {
           url.searchParams.append("startDate", searchDate);
         }
@@ -43,7 +42,7 @@ const BulletinBoard = ({ isAdmin = false, onClose }: BulletinBoardProps) => {
     };
 
     fetchPosts();
-  }, [searchDate, searchQuery]); // 検索条件が変わるたびにデータを再取得
+  }, [searchDate, searchQuery]);
 
   const handleDelete = async (postId: number) => {
     try {
