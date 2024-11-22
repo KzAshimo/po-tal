@@ -6,6 +6,7 @@ export async function GET(req: Request) {
   const searchTerm = searchParams.get("searchTerm");
   const startDate = searchParams.get("startDate");
 
+  // 掲示板投稿
   try {
     let query = supabase.from("board").select("*");
 

@@ -5,6 +5,7 @@ export async function POST(req: Request) {
   try {
     const { id, executive } = await req.json();
 
+    // userdata executiveのupdate
     const { error } = await supabase
       .from("users")
       .update({ executive })

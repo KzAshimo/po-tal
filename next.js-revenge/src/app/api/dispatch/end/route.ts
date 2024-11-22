@@ -6,7 +6,7 @@ const SECRET_KEY = process.env.SECRET_KEY || "";
 const JWT_SECRET = process.env.JWT_SECRET || SECRET_KEY;
 
 if (!JWT_SECRET) {
-    console.error("環境変数 SECRET_KEY または JWT_SECRET が設定されていません");
+    console.error("SECRET_KEY または JWT_SECRET が設定されていません");
 }
 
 interface DecodedId extends JwtPayload {

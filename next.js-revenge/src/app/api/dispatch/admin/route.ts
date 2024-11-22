@@ -7,7 +7,7 @@ export async function GET() {
       .from('locations')
       .select(`
         *,
-        users:users(username, group_name)  // usersテーブルのusernameとgroup_nameを取得
+        users(username, group_name)
       `)  
       .order('start_time', { ascending: false });
 
@@ -15,7 +15,7 @@ export async function GET() {
       throw new Error(error.message);
     }
 
-    return NextResponse.json({ location: data });
+    return NextResponse.json({ location: data  });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ message: 'データベースエラー' }, { status: 500 });

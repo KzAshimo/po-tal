@@ -5,6 +5,7 @@ export async function DELETE(req: Request) {
   try {
     const { id } = await req.json();
 
+    // userdataのdeleteメソッド
     const {  error } = await supabase
       .from("users")
       .delete()

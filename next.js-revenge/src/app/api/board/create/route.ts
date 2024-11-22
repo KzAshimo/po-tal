@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   const { title, content } = await req.json();
 
+  // 掲示板投稿
   try {
     const { data, error } = await supabase
       .from('board')

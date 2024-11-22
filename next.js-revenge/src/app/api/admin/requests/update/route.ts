@@ -5,6 +5,7 @@ export async function POST(req: Request) {
     try {
         const { id, status } = await req.json();
 
+        // request statusのupdateメソッド
         const { error } = await supabase
             .from('requests')
             .update({ status })
