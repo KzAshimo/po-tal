@@ -155,17 +155,20 @@ const Admin = () => {
   useEffect(() => {
     const fetchRequestsData = async () => {
       try {
-        const response = await fetch("/api/requests/admin");
+        const response = await fetch("/api/requests/admin", {
+          method: "GET",
+          cache: "no-store", // キャッシュを無効化
+        });
         if (!response.ok) throw new Error("データ取得エラー");
         const result = await response.json();
         setData((prevData) => ({ ...prevData, requests: result.requests }));
       } catch (error) {
         console.error(error);
-        setError((error as Error).message);      }
+        setError((error as Error).message);
+      }
     };
     fetchRequestsData();
   }, []);
-
   //要望status切り替え---
   const toggleStatus = async (id: number, status: number) => {
     const newStatus = status === 1 ? 0 : 1;
