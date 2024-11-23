@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: "認証エラー: トークンが無効です" }, { status: 401 });
     }
 
-    const userId = decodedToken.id;
+    const request_id = decodedToken.id;
 
     // 必須フィールドのチェック
     if (!group_name || !content) {
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       .from('requests')
       .insert([
         {
-          user_id: userId,
+          request_id: request_id,
           group_name: group_name,
           content: content,
         },
