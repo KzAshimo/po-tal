@@ -18,9 +18,9 @@ export async function POST(req: Request) {
     }
 
     const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
-    const location_id = decoded.id;
+    const userId = decoded.id;
 
-    if (!location_id) {
+    if (!userId) {
       return NextResponse.json(
         { message: "ユーザーが見つかりません" },
         { status: 401 }
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     const { data, error } = await supabase
       .from("locations") 
       .insert({
-        location_id: location_id,
+        location_id: userId,
         start_latitude: latitude,
         start_longitude: longitude,
         start_time: new Date().toISOString(),
