@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       .from('requests')
       .insert([
         {
-          request_id: userId,
+          user_id: userId,
           group_name: group_name,
           content: content,
         },

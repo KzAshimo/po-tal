@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     const { data, error } = await supabase
       .from("locations") 
       .insert({
-        location_id: userId,
+        user_id: userId,
         start_latitude: latitude,
         start_longitude: longitude,
         start_time: new Date().toISOString(),
