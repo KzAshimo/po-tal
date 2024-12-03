@@ -1,11 +1,10 @@
 import { supabase } from "@/lib/db";
 import { NextResponse } from "next/server";
 
-export async function DELETE(req: Request) {
+export async function DELETE(req: Request) { //delete1メソッド
     try {
-        const { id } = await req.json();
+        const { id } = await req.json(); 
 
-        // requestのdeleteメソッド
         const { error } = await supabase
             .from('requests')
             .delete()

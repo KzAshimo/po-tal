@@ -14,7 +14,7 @@ const AdminPostForm = ({onClose}:AdminPostProps) =>{
         e.preventDefault();
 
         try{
-            const response = await fetch("/api/board/create",{
+            const response = await fetch("/api/board/create",{ //掲示板送信
                 method:"POST",
                 headers:{"Content-Type":"application/json"},
                 body:JSON.stringify({title,content}),
